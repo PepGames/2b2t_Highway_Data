@@ -20,6 +20,17 @@ let zoom = 1;
 
 const pointStyles = {};
 
+const TYPE_LABELS = {
+  signs: "Signs",
+  echests: "Ender Chests",
+  boats: "Boats",
+  donkeys: "Donkeys",
+  horses: "Horses",
+  pigs: "Pigs",
+  shulkers: "Shulkers",
+  wolves: "Wolves"
+};
+
 function getDefaultStyle(type) {
   const defaults = {
     Boats:   { color: "#1f77b4", size: 4, shape: "circle" },
@@ -38,36 +49,37 @@ function getPointStyle(type) {
   return pointStyles[type] || getDefaultStyle(type);
 }
 
-function setupStyleControls(type) {
-  const colorInput = document.getElementById(`color-${type}`);
-  const sizeInput = document.getElementById(`size-${type}`);
-  const shapeSelect = document.getElementById(`shape-${type}`);
+function setupStyleControls(key) {
+  const label = TYPE_LABELS[key];
+  const colorInput = document.getElementById(`color-${key}`);
+  const sizeInput = document.getElementById(`size-${key}`);
+  const shapeSelect = document.getElementById(`shape-${key}`);
 
-  const defaults = getPointStyle(type);
+  const defaults = getPointStyle(label);
   if (colorInput) colorInput.value = defaults.color;
   if (sizeInput) sizeInput.value = defaults.size;
   if (shapeSelect) shapeSelect.value = defaults.shape;
 
   if (colorInput) {
     colorInput.addEventListener("input", () => {
-      pointStyles[type] = pointStyles[type] || getDefaultStyle(type);
-      pointStyles[type].color = colorInput.value;
+      pointStyles[label] = pointStyles[label] || getDefaultStyle(label);
+      pointStyles[label].color = colorInput.value;
       draw();
     });
   }
 
   if (sizeInput) {
     sizeInput.addEventListener("input", () => {
-      pointStyles[type] = pointStyles[type] || getDefaultStyle(type);
-      pointStyles[type].size = parseInt(sizeInput.value, 10) || 4;
+      pointStyles[label] = pointStyles[label] || getDefaultStyle(label);
+      pointStyles[label].size = parseInt(sizeInput.value, 10) || 4;
       draw();
     });
   }
 
   if (shapeSelect) {
     shapeSelect.addEventListener("change", () => {
-      pointStyles[type] = pointStyles[type] || getDefaultStyle(type);
-      pointStyles[type].shape = shapeSelect.value;
+      pointStyles[label] = pointStyles[label] || getDefaultStyle(label);
+      pointStyles[label].shape = shapeSelect.value;
       draw();
     });
   }
@@ -317,7 +329,7 @@ Papa.parse("map.csv", {
       X: parseFloat(row.X),
       Y: parseFloat(row.Y),
       Z: parseFloat(row.Z),
-      Type: row.Type
+      Type: TYPE_LABELS[row.Type.toLowerCase()] || row.Type
     })).filter(p => !isNaN(p.X) && !isNaN(p.Z));
     resizeCanvas();
     if (!hasInitialCentered) {
@@ -325,6 +337,6 @@ Papa.parse("map.csv", {
       hasInitialCentered = true;
     }
 
-    ["signs", "echests", "boats", "donkeys", "horses", "pigs", "shulkers", "wolves"].forEach(setupStyleControls);
+    Object.keys(TYPE_LABELS).forEach(setupStyleControls);
   }
 });
