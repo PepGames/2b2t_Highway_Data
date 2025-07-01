@@ -21,10 +21,14 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  // Set default zoom to show 10M x 10M area initially
-  const visibleWorldSpan = 10000000; // 10 million blocks
+  // Set zoom to show 10M x 10M area initially
+  const visibleWorldSpan = 10000000;
   zoom = Math.min(canvas.width / (visibleWorldSpan * 2), canvas.height / (visibleWorldSpan * 2));
-  // intentionally omitted offsetX and offsetY reset to keep map centered via worldToScreen
+
+  // Center the view on (0, 0) so Z: ±30M is vertically centered
+  offsetX = 0;
+  offsetY = 0;
+
   draw();
   drawMouseCoordinates();
 }
@@ -242,7 +246,7 @@ document.getElementById("toggle-grid").addEventListener("click", () => {
 document.getElementById("center-view").addEventListener("click", () => {
   offsetX = 0;
   offsetY = 0;
-  zoom = Math.min(canvas.width / (MAP_LIMIT * 2), canvas.height / (MAP_LIMIT * 2));
+  zoom = Math.min(canvas.width / (10000000 * 2), canvas.height / (10000000 * 2));
   draw();
 });
 
