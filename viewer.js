@@ -68,23 +68,28 @@ function drawGrid() {
   ctx.font = "12px sans-serif";
   ctx.fillStyle = theme === "dark" ? "#888" : "#555";
   ctx.textAlign = "left";
+  ctx.textBaseline = "top";
 
   for (let x = startX; x <= endX; x += spacing) {
     const sx = worldToScreen(x, 0).x;
-    ctx.beginPath();
-    ctx.moveTo(sx, 0);
-    ctx.lineTo(sx, canvas.height);
-    ctx.stroke();
-    ctx.fillText(`X: ${x}`, sx + 2, 12);
+    if (sx >= 0 && sx <= canvas.width) {
+      ctx.beginPath();
+      ctx.moveTo(sx, 0);
+      ctx.lineTo(sx, canvas.height);
+      ctx.stroke();
+      ctx.fillText(`X: ${x}`, sx + 2, 2);
+    }
   }
 
   for (let y = startY; y <= endY; y += spacing) {
     const sy = worldToScreen(0, y).y;
-    ctx.beginPath();
-    ctx.moveTo(0, sy);
-    ctx.lineTo(canvas.width, sy);
-    ctx.stroke();
-    ctx.fillText(`Z: ${y}`, 2, sy - 4);
+    if (sy >= 0 && sy <= canvas.height) {
+      ctx.beginPath();
+      ctx.moveTo(0, sy);
+      ctx.lineTo(canvas.width, sy);
+      ctx.stroke();
+      ctx.fillText(`Z: ${y}`, 2, sy + 2);
+    }
   }
 
   const bounds = [
