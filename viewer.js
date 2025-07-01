@@ -12,6 +12,8 @@ let isDragging = false;
 let dragStart = { x: 0, y: 0 };
 let theme = "dark";
 let showGrid = false;
+let mouseX = 0;
+let mouseY = 0;
 
 const MAP_LIMIT = 30000000;
 
@@ -36,14 +38,17 @@ function worldToScreen(x, y) {
 }
 
 function getGridSpacing() {
-  const pxPerBlock = zoom;
-  if (pxPerBlock > 30) return 16;
-  if (pxPerBlock > 15) return 64;
-  if (pxPerBlock > 7) return 128;
-  if (pxPerBlock > 3) return 256;
-  if (pxPerBlock > 1.5) return 512;
-  return 1024;
+  const screenSize = Math.max(canvas.width, canvas.height);
+  const worldSpan = screenSize / zoom;
+
+  // Choose grid spacing dynamically: base 10 and its multiples
+  const exponent = Math.floor(Math.log10(worldSpan / 10));
+  const spacing = Math.pow(10, exponent);
+
+  return spacing;
 }
+
+
 
 function drawGrid() {
   const spacing = getGridSpacing();
@@ -110,6 +115,7 @@ function drawGrid() {
 }
 
 function draw() {
+  drawMouseCoordinates();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
@@ -183,6 +189,8 @@ canvas.addEventListener("mouseup", () => {
 });
 
 canvas.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
   if (isDragging) {
     offsetX += e.clientX - dragStart.x;
     offsetY += e.clientY - dragStart.y;
@@ -206,6 +214,21 @@ document.getElementById("toggle-grid").addEventListener("click", () => {
   showGrid = !showGrid;
   draw();
 });
+
+document.getElementById("center-view").addEventListener("click", () => {
+  offsetX = 0;
+  offsetY = 0;
+  zoom = 1;
+  draw();
+});
+
+function drawMouseCoordinates() {
+  const world = screenToWorld(mouseX, mouseY);
+  ctx.font = "12px sans-serif";
+  ctx.fillStyle = theme === "dark" ? "#ccc" : "#222";
+  ctx.textAlign = "right";
+  ctx.fillText(`X: ${world.x.toFixed(0)}  Z: ${world.y.toFixed(0)}`, canvas.width - 10, 20);
+}
 
 Papa.parse("map.csv", {
   download: true,
