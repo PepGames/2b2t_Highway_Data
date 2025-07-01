@@ -155,7 +155,7 @@ function checkHover(mouseX, mouseY) {
     const dx = world.x - point.X;
     const dy = world.y - point.Z;
     if (dx * dx + dy * dy < (6 / zoom) ** 2) {
-      showTooltip(mouseX, mouseY, `Type: ${point.Type}\nX: ${point.X}\nY: ${point.Y}`);
+      showTooltip(mouseX, mouseY, `Type: ${point.Type}\nX: ${point.X}\nY: ${point.Y}\nZ: ${point.Z}`);
       return;
     }
   }
