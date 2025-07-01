@@ -116,11 +116,12 @@ function drawGrid() {
 }
 
 function draw() {
-  drawMouseCoordinates();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Rest of draw logic continues...
 
   if (showGrid) drawGrid();
 
@@ -131,6 +132,8 @@ function draw() {
     ctx.fillStyle = point.Type === "Chest" ? "#f00" : "#00f";
     ctx.fill();
   }
+
+  drawMouseCoordinates();
 }
 
 function showTooltip(x, y, content) {
@@ -225,10 +228,11 @@ document.getElementById("center-view").addEventListener("click", () => {
 
 function drawMouseCoordinates() {
   const world = screenToWorld(mouseX, mouseY);
-  ctx.font = "12px sans-serif";
-  ctx.fillStyle = theme === "dark" ? "#ccc" : "#222";
-  ctx.textAlign = "right";
-  ctx.fillText(`X: ${world.x.toFixed(0)}  Z: ${world.y.toFixed(0)}`, canvas.width - 10, 20);
+  const coordBox = document.getElementById("coord-box");
+  if (coordBox) {
+    coordBox.innerText = `X: ${world.x.toFixed(0)}  Z: ${world.y.toFixed(0)}`;
+  }
+}  Z: ${world.y.toFixed(0)}`, canvas.width - 10, 20);
 }
 
 Papa.parse("map.csv", {
