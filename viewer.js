@@ -225,8 +225,9 @@ function draw() {
       screen.y + style.size < 0 || screen.y - style.size > canvas.height
     ) continue;
 
-    // Skip ultra-small points when zoomed out
-    if (zoom < 0.002 && style.size * zoom < 0.5) continue;
+    // Skip ultra-small points when zoomed way out
+    if (style.size * zoom < 0.1) continue;
+
 
     ctx.beginPath();
     switch (style.shape) {
