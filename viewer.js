@@ -33,14 +33,14 @@ const TYPE_LABELS = {
 
 function getDefaultStyle(type) {
   const defaults = {
-    Boats:   { color: "#1f77b4", size: 4, shape: "circle" },
-    Donkeys: { color: "#ff7f0e", size: 4, shape: "square" },
-    "Ender Chests": { color: "#2ca02c", size: 4, shape: "triangle" },
-    Horses:  { color: "#d62728", size: 4, shape: "circle" },
-    Pigs:    { color: "#9467bd", size: 4, shape: "x" },
-    Shulkers:{ color: "#8c564b", size: 4, shape: "square" },
-    Signs:   { color: "#e377c2", size: 4, shape: "circle" },
-    Wolves:  { color: "#7f7f7f", size: 4, shape: "triangle" },
+    boats:   { color: "#1f77b4", size: 4, shape: "circle" },
+    donkeys: { color: "#ff7f0e", size: 4, shape: "square" },
+    echests: { color: "#2ca02c", size: 4, shape: "triangle" },
+    horses:  { color: "#d62728", size: 4, shape: "circle" },
+    pigs:    { color: "#9467bd", size: 4, shape: "x" },
+    shulkers:{ color: "#8c564b", size: 4, shape: "square" },
+    signs:   { color: "#e377c2", size: 4, shape: "circle" },
+    wolves:  { color: "#7f7f7f", size: 4, shape: "triangle" },
   };
   return defaults[type] || { color: "#00f", size: 4, shape: "circle" };
 }
@@ -55,31 +55,31 @@ function setupStyleControls(key) {
   const sizeInput = document.getElementById(`size-${key}`);
   const shapeSelect = document.getElementById(`shape-${key}`);
 
-  const defaults = getPointStyle(label);
+  const defaults = getPointStyle(key);
   if (colorInput) colorInput.value = defaults.color;
   if (sizeInput) sizeInput.value = defaults.size;
   if (shapeSelect) shapeSelect.value = defaults.shape;
 
   if (colorInput) {
     colorInput.addEventListener("input", () => {
-      pointStyles[label] = pointStyles[label] || getDefaultStyle(label);
-      pointStyles[label].color = colorInput.value;
+      pointStyles[key] = pointStyles[key] || getDefaultStyle(key);
+      pointStyles[key].color = colorInput.value;
       draw();
     });
   }
 
   if (sizeInput) {
     sizeInput.addEventListener("input", () => {
-      pointStyles[label] = pointStyles[label] || getDefaultStyle(label);
-      pointStyles[label].size = parseInt(sizeInput.value, 10) || 4;
+      pointStyles[key] = pointStyles[key] || getDefaultStyle(key);
+      pointStyles[key].size = parseInt(sizeInput.value, 10) || 4;
       draw();
     });
   }
 
   if (shapeSelect) {
     shapeSelect.addEventListener("change", () => {
-      pointStyles[label] = pointStyles[label] || getDefaultStyle(label);
-      pointStyles[label].shape = shapeSelect.value;
+      pointStyles[key] = pointStyles[key] || getDefaultStyle(key);
+      pointStyles[key].shape = shapeSelect.value;
       draw();
     });
   }
@@ -242,7 +242,11 @@ function checkHover(mouseX, mouseY) {
     const dx = world.x - point.X;
     const dy = world.y - point.Z;
     if (dx * dx + dy * dy < (6 / zoom) ** 2) {
-      showTooltip(mouseX, mouseY, `Type: ${point.Type}\nX: ${point.X}\nY: ${point.Y}\nZ: ${point.Z}`);
+      const label = TYPE_LABELS[point.Type] || point.Type;
+      showTooltip(mouseX, mouseY, `Type: ${label}
+X: ${point.X}
+Y: ${point.Y}
+Z: ${point.Z}`);
       return;
     }
   }
@@ -329,7 +333,7 @@ Papa.parse("map.csv", {
       X: parseFloat(row.X),
       Y: parseFloat(row.Y),
       Z: parseFloat(row.Z),
-      Type: TYPE_LABELS[row.Type.toLowerCase()] || row.Type
+      Type: row.Type.toLowerCase()
     })).filter(p => !isNaN(p.X) && !isNaN(p.Z));
     resizeCanvas();
     if (!hasInitialCentered) {
