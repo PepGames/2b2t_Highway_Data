@@ -5,7 +5,7 @@ const ctx = canvas.getContext("2d");
 const tooltip = document.getElementById("tooltip");
 
 let dataPoints = [];
-let zoom = Math.min(canvas.width / (MAP_LIMIT * 2), canvas.height / (MAP_LIMIT * 2));
+// zoom will be calculated on resizeCanvas
 let offsetX = 0;
 let offsetY = 0;
 let isDragging = false;
@@ -20,6 +20,10 @@ const MAP_LIMIT = 30000000;
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
+
+  zoom = Math.min(canvas.width / (MAP_LIMIT * 2), canvas.height / (MAP_LIMIT * 2));
+  offsetX = 0;
+  offsetY = 0;
   draw();
   drawMouseCoordinates();
 }
