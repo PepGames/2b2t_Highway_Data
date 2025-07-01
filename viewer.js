@@ -180,8 +180,10 @@ canvas.addEventListener("wheel", (e) => {
   const worldBefore = screenToWorld(mouseX, mouseY);
   const oldZoom = zoom;
   zoom *= e.deltaY > 0 ? 0.9 : 1.1;
-  const maxVisibleWorldSize = 2 * MAP_LIMIT;
-  const maxZoomOut = Math.min(canvas.width, canvas.height) / maxVisibleWorldSize;
+
+  const visibleWorldWidth = canvas.width / zoom;
+  const visibleWorldHeight = canvas.height / zoom;
+  const maxZoomOut = Math.min(canvas.width / (2 * MAP_LIMIT), canvas.height / (2 * MAP_LIMIT));
   zoom = Math.max(maxZoomOut, Math.min(zoom, 100));
 
   const worldAfter = screenToWorld(mouseX, mouseY);
@@ -208,14 +210,16 @@ canvas.addEventListener("mouseup", () => {
 canvas.addEventListener("mousemove", (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
+
   if (isDragging) {
     offsetX += e.clientX - dragStart.x;
     offsetY += e.clientY - dragStart.y;
     dragStart = { x: e.clientX, y: e.clientY };
-    draw();
   } else {
     checkHover(e.clientX, e.clientY);
-    drawMouseCoordinates();
+  }
+
+  draw();
   }
 });
 
