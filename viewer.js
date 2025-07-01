@@ -87,6 +87,7 @@ function setupStyleControls(key) {
   }
 }
 
+
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -337,12 +338,14 @@ Papa.parse("map.csv", {
       Z: parseFloat(row.Z),
       Type: row.Type.toLowerCase()
     })).filter(p => !isNaN(p.X) && !isNaN(p.Z));
+
+    Object.keys(TYPE_LABELS).forEach(setupStyleControls);
     resizeCanvas();
+    draw();
+
     if (!hasInitialCentered) {
       centerView();
       hasInitialCentered = true;
     }
-
-    Object.keys(TYPE_LABELS).forEach(setupStyleControls);
   }
 });
