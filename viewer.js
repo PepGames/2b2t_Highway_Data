@@ -5,7 +5,6 @@ const ctx = canvas.getContext("2d");
 const tooltip = document.getElementById("tooltip");
 
 let dataPoints = [];
-// zoom will be calculated on resizeCanvas
 let offsetX = 0;
 let offsetY = 0;
 let isDragging = false;
@@ -14,23 +13,23 @@ let theme = "dark";
 let showGrid = false;
 let mouseX = 0;
 let mouseY = 0;
+let hasInitialCentered = false;
 
 const MAP_LIMIT = 30000000;
+let zoom = 1;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-
-  // Set zoom to show 10M x 10M area initially
-  const visibleWorldSpan = 10000000;
-  zoom = Math.min(canvas.width / (visibleWorldSpan * 2), canvas.height / (visibleWorldSpan * 2));
-
-  // Center the view on (0, 0) so Z: ±30M is vertically centered
-  offsetX = 0;
-  offsetY = 0;
-
   draw();
   drawMouseCoordinates();
+}
+
+function centerView() {
+  zoom = Math.min(canvas.width / (MAP_LIMIT * 2), canvas.height / (MAP_LIMIT * 2));
+  offsetX = 0;
+  offsetY = 0;
+  draw();
 }
 
 function screenToWorld(x, y) {
@@ -50,15 +49,10 @@ function worldToScreen(x, y) {
 function getGridSpacing() {
   const screenSize = Math.max(canvas.width, canvas.height);
   const worldSpan = screenSize / zoom;
-
-  // Choose grid spacing dynamically: base 10 and its multiples
   const exponent = Math.floor(Math.log10(worldSpan / 10));
   const spacing = Math.pow(10, exponent);
-
   return spacing;
 }
-
-
 
 function drawGrid() {
   const spacing = getGridSpacing();
@@ -70,18 +64,14 @@ function drawGrid() {
   const startY = Math.max(Math.floor(bottomRight.y / spacing) * spacing, -MAP_LIMIT);
   const endY = Math.min(Math.ceil(topLeft.y / spacing) * spacing, MAP_LIMIT);
 
-  const maxLines = 200;
-  if ((endX - startX) / spacing > maxLines || (endY - startY) / spacing > maxLines) return;
-
   ctx.strokeStyle = theme === "dark" ? "#444" : "#ccc";
   ctx.lineWidth = 1;
   ctx.font = "12px sans-serif";
   ctx.fillStyle = theme === "dark" ? "#888" : "#555";
   ctx.textAlign = "left";
 
-  const labelThreshold = 50; // px between labels
+  const labelThreshold = 50;
 
-  // Vertical lines
   for (let x = startX; x <= endX; x += spacing) {
     const sx = worldToScreen(x, 0).x;
     ctx.beginPath();
@@ -93,7 +83,6 @@ function drawGrid() {
     }
   }
 
-  // Horizontal lines
   for (let y = startY; y <= endY; y += spacing) {
     const sy = worldToScreen(0, y).y;
     ctx.beginPath();
@@ -105,7 +94,6 @@ function drawGrid() {
     }
   }
 
-  // Draw map boundary box
   const bounds = [
     worldToScreen(-MAP_LIMIT, -MAP_LIMIT),
     worldToScreen(MAP_LIMIT, -MAP_LIMIT),
@@ -124,27 +112,27 @@ function drawGrid() {
   ctx.stroke();
 }
 
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+function clampOffset() {
+  const halfWidth = canvas.width / 2 / zoom;
+  const halfHeight = canvas.height / 2 / zoom;
+  const minX = -MAP_LIMIT + halfWidth;
+  const maxX = MAP_LIMIT - halfWidth;
+  const minY = -MAP_LIMIT + halfHeight;
+  const maxY = MAP_LIMIT - halfHeight;
+  const centerX = -offsetX / zoom;
+  const centerY = -offsetY / zoom;
+  const clampedX = Math.max(minX, Math.min(maxX, centerX));
+  const clampedY = Math.max(minY, Math.min(maxY, centerY));
+  offsetX = -clampedX * zoom;
+  offsetY = -clampedY * zoom;
+}
 
+function draw() {
+  clampOffset();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Clamp panning to MAP_LIMIT bounds
-  const visibleHalfWidth = canvas.width / (2 * zoom);
-  const visibleHalfHeight = canvas.height / (2 * zoom);
-  const maxOffsetX = MAP_LIMIT - visibleHalfWidth;
-  const maxOffsetY = MAP_LIMIT - visibleHalfHeight;
-  const minOffsetX = -MAP_LIMIT + visibleHalfWidth;
-  const minOffsetY = -MAP_LIMIT + visibleHalfHeight;
-
-  offsetX = Math.max(minOffsetX * zoom, Math.min(maxOffsetX * zoom, offsetX));
-  offsetY = Math.max(minOffsetY * zoom, Math.min(maxOffsetY * zoom, offsetY));
-
-  // Rest of draw logic continues...
-
   if (showGrid) drawGrid();
-
   for (const point of dataPoints) {
     const screen = worldToScreen(point.X, point.Z);
     ctx.beginPath();
@@ -152,7 +140,6 @@ function draw() {
     ctx.fillStyle = point.Type === "Chest" ? "#f00" : "#00f";
     ctx.fill();
   }
-
   drawMouseCoordinates();
 }
 
@@ -182,23 +169,15 @@ function checkHover(mouseX, mouseY) {
 
 canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
-
   const mouseX = e.clientX;
   const mouseY = e.clientY;
-
   const worldBefore = screenToWorld(mouseX, mouseY);
-  const oldZoom = zoom;
   zoom *= e.deltaY > 0 ? 0.9 : 1.1;
-
-  const visibleWorldWidth = canvas.width / zoom;
-  const visibleWorldHeight = canvas.height / zoom;
   const maxZoomOut = Math.min(canvas.width / (2 * MAP_LIMIT), canvas.height / (2 * MAP_LIMIT));
   zoom = Math.max(maxZoomOut, Math.min(zoom, 100));
-
   const worldAfter = screenToWorld(mouseX, mouseY);
   offsetX += (worldBefore.x - worldAfter.x) * zoom;
   offsetY += (worldBefore.y - worldAfter.y) * zoom;
-
   draw();
 });
 
@@ -216,7 +195,6 @@ canvas.addEventListener("mouseup", () => {
 canvas.addEventListener("mousemove", (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
-
   if (isDragging) {
     offsetX += e.clientX - dragStart.x;
     offsetY += e.clientY - dragStart.y;
@@ -224,14 +202,15 @@ canvas.addEventListener("mousemove", (e) => {
   } else {
     checkHover(e.clientX, e.clientY);
   }
-
   draw();
-  drawMouseCoordinates();
 });
 
 canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => {
+  resizeCanvas();
+});
+
 document.getElementById("toggle-theme").addEventListener("click", () => {
   theme = theme === "dark" ? "light" : "dark";
   document.body.setAttribute("data-theme", theme);
@@ -244,10 +223,7 @@ document.getElementById("toggle-grid").addEventListener("click", () => {
 });
 
 document.getElementById("center-view").addEventListener("click", () => {
-  offsetX = 0;
-  offsetY = 0;
-  zoom = Math.min(canvas.width / (10000000 * 2), canvas.height / (10000000 * 2));
-  draw();
+  centerView();
 });
 
 function drawMouseCoordinates() {
@@ -256,7 +232,6 @@ function drawMouseCoordinates() {
   if (coordBox) {
     coordBox.innerText = `X: ${world.x.toFixed(0)}  Z: ${world.y.toFixed(0)}`;
   }
-
 }
 
 Papa.parse("map.csv", {
@@ -270,5 +245,9 @@ Papa.parse("map.csv", {
       Type: row.Type
     })).filter(p => !isNaN(p.X) && !isNaN(p.Z));
     resizeCanvas();
+    if (!hasInitialCentered) {
+      centerView();
+      hasInitialCentered = true;
+    }
   }
 });
