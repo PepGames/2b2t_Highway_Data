@@ -223,7 +223,24 @@ function draw() {
     drawnPointsCache = {};
     drawnPointsZoomLevel = zoomLevel;
 
+    const tempCache = {};
+
     for (const point of dataPoints) {
+      const style = getPointStyle(point.Type);
+      const radiusInWorld = style.size / zoom;
+      const key = `${Math.round(point.X / radiusInWorld)},${Math.round(point.Z / radiusInWorld)}`;
+
+      if (!tempCache[point.Type]) tempCache[point.Type] = new Set();
+      if (tempCache[point.Type].has(key)) continue;
+
+      tempCache[point.Type].add(key);
+      if (!drawnPointsCache[point.Type]) drawnPointsCache[point.Type] = [];
+      drawnPointsCache[point.Type].push(point);
+    }
+  }
+
+  for (const type in drawnPointsCache) {
+    for (const point of drawnPointsCache[type]) {
       const screen = worldToScreen(point.X, point.Z);
       const style = getPointStyle(point.Type);
 
@@ -233,53 +250,35 @@ function draw() {
         screen.y + style.size < 0 || screen.y - style.size > canvas.height
       ) continue;
 
-      const key = `${Math.round(screen.x / (style.size * 1.5))},${Math.round(screen.y / (style.size * 1.5))}`;
-      if (!drawnPointsCache[point.Type]) drawnPointsCache[point.Type] = new Set();
-      if (drawnPointsCache[point.Type].has(key)) continue;
-      drawnPointsCache[point.Type].add(key);
+      ctx.beginPath();
+      switch (style.shape) {
+        case 'square':
+          ctx.rect(screen.x - style.size / 2, screen.y - style.size / 2, style.size, style.size);
+          break;
+        case 'triangle':
+          ctx.moveTo(screen.x, screen.y - style.size);
+          ctx.lineTo(screen.x - style.size, screen.y + style.size);
+          ctx.lineTo(screen.x + style.size, screen.y + style.size);
+          ctx.closePath();
+          break;
+        case 'x':
+          ctx.moveTo(screen.x - style.size, screen.y - style.size);
+          ctx.lineTo(screen.x + style.size, screen.y + style.size);
+          ctx.moveTo(screen.x + style.size, screen.y - style.size);
+          ctx.lineTo(screen.x - style.size, screen.y + style.size);
+          break;
+        default:
+          ctx.arc(screen.x, screen.y, style.size, 0, Math.PI * 2);
+      }
+      ctx.strokeStyle = style.shape === 'x' ? style.color : 'transparent';
+      ctx.fillStyle = style.color;
+      if (style.shape === 'x') ctx.stroke(); else ctx.fill();
     }
-  }
-
-  for (const point of dataPoints) {
-    const screen = worldToScreen(point.X, point.Z);
-    const style = getPointStyle(point.Type);
-
-    // Skip if offscreen
-    if (
-      screen.x + style.size < 0 || screen.x - style.size > canvas.width ||
-      screen.y + style.size < 0 || screen.y - style.size > canvas.height
-    ) continue;
-
-    const key = `${Math.round(screen.x / (style.size * 1.5))},${Math.round(screen.y / (style.size * 1.5))}`;
-    if (!drawnPointsCache[point.Type] || !drawnPointsCache[point.Type].has(key)) continue;
-
-    ctx.beginPath();
-    switch (style.shape) {
-      case 'square':
-        ctx.rect(screen.x - style.size / 2, screen.y - style.size / 2, style.size, style.size);
-        break;
-      case 'triangle':
-        ctx.moveTo(screen.x, screen.y - style.size);
-        ctx.lineTo(screen.x - style.size, screen.y + style.size);
-        ctx.lineTo(screen.x + style.size, screen.y + style.size);
-        ctx.closePath();
-        break;
-      case 'x':
-        ctx.moveTo(screen.x - style.size, screen.y - style.size);
-        ctx.lineTo(screen.x + style.size, screen.y + style.size);
-        ctx.moveTo(screen.x + style.size, screen.y - style.size);
-        ctx.lineTo(screen.x - style.size, screen.y + style.size);
-        break;
-      default:
-        ctx.arc(screen.x, screen.y, style.size, 0, Math.PI * 2);
-    }
-    ctx.strokeStyle = style.shape === 'x' ? style.color : 'transparent';
-    ctx.fillStyle = style.color;
-    if (style.shape === 'x') ctx.stroke(); else ctx.fill();
   }
 
   drawMouseCoordinates();
 }
+
 
 
 
