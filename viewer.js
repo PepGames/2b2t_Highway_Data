@@ -154,14 +154,19 @@ canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
   const mouseX = e.clientX;
   const mouseY = e.clientY;
+
   const worldBefore = screenToWorld(mouseX, mouseY);
+
   const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
   const newZoom = zoom * zoomFactor;
   const maxZoomOut = canvas.height / (2 * MAP_LIMIT);
   zoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
+
   const worldAfter = screenToWorld(mouseX, mouseY);
+
   offsetX += (worldBefore.x - worldAfter.x) * zoom;
   offsetY += (worldBefore.y - worldAfter.y) * zoom;
+
   draw();
 });
 
