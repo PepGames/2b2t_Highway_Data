@@ -35,14 +35,14 @@ function centerView() {
 function screenToWorld(x, y) {
   return {
     x: (x - canvas.width / 2 - offsetX) / zoom,
-    y: -(y - canvas.height / 2 - offsetY) / zoom
+    y: (y - canvas.height / 2 - offsetY) / zoom
   };
 }
 
 function worldToScreen(x, y) {
   return {
     x: x * zoom + canvas.width / 2 + offsetX,
-    y: -y * zoom + canvas.height / 2 + offsetY
+    y: y * zoom + canvas.height / 2 + offsetY
   };
 }
 
@@ -154,19 +154,18 @@ canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
   const mouseX = e.clientX;
   const mouseY = e.clientY;
-
   const worldBefore = screenToWorld(mouseX, mouseY);
 
   const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
   const newZoom = zoom * zoomFactor;
   const maxZoomOut = canvas.height / (2 * MAP_LIMIT);
-  zoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
+  const clampedZoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
 
   const worldAfter = screenToWorld(mouseX, mouseY);
+  offsetX += (worldBefore.x - worldAfter.x) * clampedZoom;
+  offsetY += (worldBefore.y - worldAfter.y) * clampedZoom;
 
-  offsetX += (worldBefore.x - worldAfter.x) * zoom;
-  offsetY -= (worldBefore.y - worldAfter.y) * zoom;
-
+  zoom = clampedZoom;
   draw();
 });
 
