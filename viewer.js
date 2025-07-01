@@ -112,13 +112,16 @@ function drawGrid() {
 }
 
 function clampOffset() {
-  const maxOffsetX = 0;
-  const minOffsetX = canvas.width - (MAP_LIMIT * 2 * zoom);
-  const maxOffsetY = 0;
-  const minOffsetY = canvas.height - (MAP_LIMIT * 2 * zoom);
+  const halfViewWidth = canvas.width / 2 / zoom;
+  const halfViewHeight = canvas.height / 2 / zoom;
 
-  offsetX = Math.min(maxOffsetX, Math.max(minOffsetX, offsetX));
-  offsetY = Math.min(maxOffsetY, Math.max(minOffsetY, offsetY));
+  const maxOffsetX = MAP_LIMIT - halfViewWidth;
+  const minOffsetX = -MAP_LIMIT + halfViewWidth;
+  const maxOffsetY = MAP_LIMIT - halfViewHeight;
+  const minOffsetY = -MAP_LIMIT + halfViewHeight;
+
+  offsetX = Math.max(-maxOffsetX * zoom, Math.min(-minOffsetX * zoom, offsetX));
+  offsetY = Math.max(-maxOffsetY * zoom, Math.min(-minOffsetY * zoom, offsetY));
 }
 
 function draw() {
@@ -163,15 +166,13 @@ function checkHover(mouseX, mouseY) {
 
 canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
-  const mouseX = e.clientX;
-  const mouseY = e.clientY;
-  const worldBefore = screenToWorld(mouseX, mouseY);
-  zoom *= e.deltaY > 0 ? 0.9 : 1.1;
+  const oldZoom = zoom;
+  const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+  zoom *= zoomFactor;
   const maxZoomOut = Math.min(canvas.width / (2 * MAP_LIMIT), canvas.height / (2 * MAP_LIMIT));
   zoom = Math.max(maxZoomOut, Math.min(zoom, 100));
-  const worldAfter = screenToWorld(mouseX, mouseY);
-  offsetX += (worldBefore.x - worldAfter.x) * zoom;
-  offsetY += (worldBefore.y - worldAfter.y) * zoom;
+  offsetX += (e.clientX - canvas.width / 2) * (1 - zoom / oldZoom);
+  offsetY += (e.clientY - canvas.height / 2) * (1 - zoom / oldZoom);
   draw();
 });
 
