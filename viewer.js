@@ -69,7 +69,7 @@ function drawGrid() {
   ctx.fillStyle = theme === "dark" ? "#888" : "#555";
   ctx.textAlign = "left";
 
-  const labelThreshold = 50;
+  const labelThreshold = Math.min(canvas.width, canvas.height) / 40;
 
   for (let x = startX; x <= endX; x += spacing) {
     const sx = worldToScreen(x, 0).x;
