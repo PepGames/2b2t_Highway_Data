@@ -121,6 +121,17 @@ function draw() {
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // Clamp panning to MAP_LIMIT bounds
+  const visibleHalfWidth = canvas.width / (2 * zoom);
+  const visibleHalfHeight = canvas.height / (2 * zoom);
+  const maxOffsetX = MAP_LIMIT - visibleHalfWidth;
+  const maxOffsetY = MAP_LIMIT - visibleHalfHeight;
+  const minOffsetX = -MAP_LIMIT + visibleHalfWidth;
+  const minOffsetY = -MAP_LIMIT + visibleHalfHeight;
+
+  offsetX = Math.max(minOffsetX * zoom, Math.min(maxOffsetX * zoom, offsetX));
+  offsetY = Math.max(minOffsetY * zoom, Math.min(maxOffsetY * zoom, offsetY));
+
   // Rest of draw logic continues...
 
   if (showGrid) drawGrid();
@@ -169,7 +180,9 @@ canvas.addEventListener("wheel", (e) => {
   const worldBefore = screenToWorld(mouseX, mouseY);
   const oldZoom = zoom;
   zoom *= e.deltaY > 0 ? 0.9 : 1.1;
-  zoom = Math.max(0.000001, Math.min(zoom, 100));
+  const maxVisibleWorldSize = 2 * MAP_LIMIT;
+  const maxZoomOut = Math.min(canvas.width, canvas.height) / maxVisibleWorldSize;
+  zoom = Math.max(maxZoomOut, Math.min(zoom, 100));
 
   const worldAfter = screenToWorld(mouseX, mouseY);
   const dx = worldAfter.x - worldBefore.x;
@@ -202,6 +215,7 @@ canvas.addEventListener("mousemove", (e) => {
     draw();
   } else {
     checkHover(e.clientX, e.clientY);
+    drawMouseCoordinates();
   }
 });
 
