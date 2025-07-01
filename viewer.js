@@ -214,9 +214,20 @@ function draw() {
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   if (showGrid) drawGrid();
+
   for (const point of dataPoints) {
     const screen = worldToScreen(point.X, point.Z);
     const style = getPointStyle(point.Type);
+
+    // Skip if offscreen
+    if (
+      screen.x + style.size < 0 || screen.x - style.size > canvas.width ||
+      screen.y + style.size < 0 || screen.y - style.size > canvas.height
+    ) continue;
+
+    // Skip ultra-small points when zoomed out
+    if (zoom < 0.002 && style.size * zoom < 0.5) continue;
+
     ctx.beginPath();
     switch (style.shape) {
       case 'square':
@@ -241,8 +252,10 @@ function draw() {
     ctx.fillStyle = style.color;
     if (style.shape === 'x') ctx.stroke(); else ctx.fill();
   }
+
   drawMouseCoordinates();
 }
+
 
 function showTooltip(x, y, content) {
   tooltip.innerText = content;
