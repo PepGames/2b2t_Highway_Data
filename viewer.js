@@ -11,6 +11,7 @@ let offsetY = 0;
 let isDragging = false;
 let dragStart = { x: 0, y: 0 };
 let theme = "dark";
+let showGrid = false;
 
 function resizeCanvas() {
   canvas.width = window.innerWidth;
@@ -32,11 +33,57 @@ function worldToScreen(x, y) {
   };
 }
 
+function drawGrid() {
+  const spacing = getGridSpacing();
+  const topLeft = screenToWorld(0, 0);
+  const bottomRight = screenToWorld(canvas.width, canvas.height);
+
+  const startX = Math.floor(topLeft.x / spacing) * spacing;
+  const endX = Math.ceil(bottomRight.x / spacing) * spacing;
+  const startY = Math.floor(bottomRight.y / spacing) * spacing;
+  const endY = Math.ceil(topLeft.y / spacing) * spacing;
+
+  ctx.strokeStyle = theme === "dark" ? "#444" : "#ccc";
+  ctx.lineWidth = 1;
+  ctx.font = "12px sans-serif";
+  ctx.fillStyle = theme === "dark" ? "#888" : "#555";
+  ctx.textAlign = "left";
+
+  // Vertical lines
+  for (let x = startX; x <= endX; x += spacing) {
+    const sx = worldToScreen(x, 0).x;
+    ctx.beginPath();
+    ctx.moveTo(sx, 0);
+    ctx.lineTo(sx, canvas.height);
+    ctx.stroke();
+    ctx.fillText(`X: ${x}`, sx + 2, 12);
+  }
+
+  // Horizontal lines
+  for (let y = startY; y <= endY; y += spacing) {
+    const sy = worldToScreen(0, y).y;
+    ctx.beginPath();
+    ctx.moveTo(0, sy);
+    ctx.lineTo(canvas.width, sy);
+    ctx.stroke();
+    ctx.fillText(`Z: ${y}`, 2, sy - 4);
+  }
+}
+
+function getGridSpacing() {
+  if (zoom > 4) return 16;
+  if (zoom > 2) return 64;
+  if (zoom > 1) return 128;
+  return 256;
+}
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  if (showGrid) drawGrid();
 
   for (const point of dataPoints) {
     const screen = worldToScreen(point.X, point.Z);
@@ -108,6 +155,11 @@ window.addEventListener("resize", resizeCanvas);
 document.getElementById("toggle-theme").addEventListener("click", () => {
   theme = theme === "dark" ? "light" : "dark";
   document.body.setAttribute("data-theme", theme);
+  draw();
+});
+
+document.getElementById("toggle-grid").addEventListener("click", () => {
+  showGrid = !showGrid;
   draw();
 });
 
