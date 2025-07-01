@@ -21,9 +21,10 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  zoom = Math.min(canvas.width / (MAP_LIMIT * 2), canvas.height / (MAP_LIMIT * 2));
-  offsetX = 0;
-  offsetY = 0;
+  // Set default zoom to show 10M x 10M area initially
+  const visibleWorldSpan = 10000000; // 10 million blocks
+  zoom = Math.min(canvas.width / (visibleWorldSpan * 2), canvas.height / (visibleWorldSpan * 2));
+  // intentionally omitted offsetX and offsetY reset to keep map centered via worldToScreen
   draw();
   drawMouseCoordinates();
 }
