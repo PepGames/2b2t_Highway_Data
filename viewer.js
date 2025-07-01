@@ -50,8 +50,7 @@ function getGridSpacing() {
   const screenSize = Math.max(canvas.width, canvas.height);
   const worldSpan = screenSize / zoom;
   const exponent = Math.floor(Math.log10(worldSpan / 10));
-  const spacing = Math.pow(10, exponent);
-  return spacing;
+  return Math.pow(10, exponent);
 }
 
 function drawGrid() {
@@ -113,10 +112,13 @@ function drawGrid() {
 }
 
 function clampOffset() {
-  const maxOffsetX = MAP_LIMIT * zoom - canvas.width / 2;
-  const maxOffsetY = MAP_LIMIT * zoom - canvas.height / 2;
-  offsetX = Math.max(-maxOffsetX, Math.min(maxOffsetX, offsetX));
-  offsetY = Math.max(-maxOffsetY, Math.min(maxOffsetY, offsetY));
+  const maxOffsetX = 0;
+  const minOffsetX = canvas.width - (MAP_LIMIT * 2 * zoom);
+  const maxOffsetY = 0;
+  const minOffsetY = canvas.height - (MAP_LIMIT * 2 * zoom);
+
+  offsetX = Math.min(maxOffsetX, Math.max(minOffsetX, offsetX));
+  offsetY = Math.min(maxOffsetY, Math.max(minOffsetY, offsetY));
 }
 
 function draw() {
