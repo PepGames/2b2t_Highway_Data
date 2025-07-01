@@ -112,13 +112,22 @@ function drawGrid() {
 }
 
 function clampOffset() {
-  const maxOffsetX = 0;
-  const minOffsetX = canvas.width - (MAP_LIMIT * 2 * zoom);
-  const maxOffsetY = 0;
-  const minOffsetY = canvas.height - (MAP_LIMIT * 2 * zoom);
+  const halfViewWidth = canvas.width / 2 / zoom;
+  const halfViewHeight = canvas.height / 2 / zoom;
 
-  offsetX = Math.min(maxOffsetX, Math.max(minOffsetX, offsetX));
-  offsetY = Math.min(maxOffsetY, Math.max(minOffsetY, offsetY));
+  const maxOffsetX = MAP_LIMIT - halfViewWidth;
+  const minOffsetX = -MAP_LIMIT + halfViewWidth;
+  const maxOffsetY = MAP_LIMIT - halfViewHeight;
+  const minOffsetY = -MAP_LIMIT + halfViewHeight;
+
+  const centerX = -offsetX / zoom;
+  const centerY = -offsetY / zoom;
+
+  const clampedX = Math.max(minOffsetX, Math.min(maxOffsetX, centerX));
+  const clampedY = Math.max(minOffsetY, Math.min(maxOffsetY, centerY));
+
+  offsetX = -clampedX * zoom;
+  offsetY = -clampedY * zoom;
 }
 
 function draw() {
