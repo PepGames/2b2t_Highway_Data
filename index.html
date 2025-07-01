@@ -12,11 +12,142 @@
     <button id="toggle-grid">Toggle Grid</button>
     <button id="center-view">Center View</button>
   </div>
+
+  <div id="sidebar">
+    <h3>Data Control</h3>
+
+    <div class="category" data-type="boats">
+      <details>
+        <summary>Boats</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+
+    <div class="category" data-type="donkeys">
+      <details>
+        <summary>Donkeys</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+
+    <div class="category" data-type="echests">
+      <details>
+        <summary>Ender Chests</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+
+    <div class="category" data-type="horses">
+      <details>
+        <summary>Horses</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+
+    <div class="category" data-type="pigs">
+      <details>
+        <summary>Pigs</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+
+    <div class="category" data-type="shulkers">
+      <details>
+        <summary>Shulkers</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+
+    <div class="category" data-type="signs">
+      <details open>
+        <summary>Signs</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+
+    <div class="category" data-type="wolves">
+      <details>
+        <summary>Wolves</summary>
+        <label>Point Color: <input type="color" data-style="color"></label>
+        <label>Point Size: <input type="number" min="1" max="20" value="4" data-style="size"></label>
+        <label>Point Shape:
+          <select data-style="shape">
+            <option value="circle">Circle</option>
+            <option value="square">Square</option>
+            <option value="triangle">Triangle</option>
+            <option value="x">X</option>
+          </select>
+        </label>
+      </details>
+    </div>
+  </div>
+
   <canvas id="mapCanvas"></canvas>
   <div id="tooltip" hidden></div>
   <div id="coord-box"></div>
-
-
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="viewer.js"></script>

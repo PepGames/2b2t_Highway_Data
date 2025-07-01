@@ -18,6 +18,50 @@ let hasInitialCentered = false;
 const MAP_LIMIT = 30000000;
 let zoom = 1;
 
+const pointStyles = {};
+
+function getDefaultStyle(type) {
+  return {
+    color: '#00f',
+    size: 4,
+    shape: 'circle'
+  };
+}
+
+function getPointStyle(type) {
+  return pointStyles[type] || getDefaultStyle(type);
+}
+
+function setupStyleControls(type) {
+  const colorInput = document.getElementById(`color-${type}`);
+  const sizeInput = document.getElementById(`size-${type}`);
+  const shapeSelect = document.getElementById(`shape-${type}`);
+
+  if (colorInput) {
+    colorInput.addEventListener("input", () => {
+      pointStyles[type] = pointStyles[type] || getDefaultStyle(type);
+      pointStyles[type].color = colorInput.value;
+      draw();
+    });
+  }
+
+  if (sizeInput) {
+    sizeInput.addEventListener("input", () => {
+      pointStyles[type] = pointStyles[type] || getDefaultStyle(type);
+      pointStyles[type].size = parseInt(sizeInput.value, 10) || 4;
+      draw();
+    });
+  }
+
+  if (shapeSelect) {
+    shapeSelect.addEventListener("change", () => {
+      pointStyles[type] = pointStyles[type] || getDefaultStyle(type);
+      pointStyles[type].shape = shapeSelect.value;
+      draw();
+    });
+  }
+}
+
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -130,10 +174,30 @@ function draw() {
   if (showGrid) drawGrid();
   for (const point of dataPoints) {
     const screen = worldToScreen(point.X, point.Z);
+    const style = getPointStyle(point.Type);
     ctx.beginPath();
-    ctx.arc(screen.x, screen.y, 4, 0, Math.PI * 2);
-    ctx.fillStyle = point.Type === "Chest" ? "#f00" : "#00f";
-    ctx.fill();
+    switch (style.shape) {
+      case 'square':
+        ctx.rect(screen.x - style.size / 2, screen.y - style.size / 2, style.size, style.size);
+        break;
+      case 'triangle':
+        ctx.moveTo(screen.x, screen.y - style.size);
+        ctx.lineTo(screen.x - style.size, screen.y + style.size);
+        ctx.lineTo(screen.x + style.size, screen.y + style.size);
+        ctx.closePath();
+        break;
+      case 'x':
+        ctx.moveTo(screen.x - style.size, screen.y - style.size);
+        ctx.lineTo(screen.x + style.size, screen.y + style.size);
+        ctx.moveTo(screen.x + style.size, screen.y - style.size);
+        ctx.lineTo(screen.x - style.size, screen.y + style.size);
+        break;
+      default:
+        ctx.arc(screen.x, screen.y, style.size, 0, Math.PI * 2);
+    }
+    ctx.strokeStyle = style.shape === 'x' ? style.color : 'transparent';
+    ctx.fillStyle = style.color;
+    if (style.shape === 'x') ctx.stroke(); else ctx.fill();
   }
   drawMouseCoordinates();
 }
@@ -249,5 +313,7 @@ Papa.parse("map.csv", {
       centerView();
       hasInitialCentered = true;
     }
+
+    ["signs", "echests", "boats", "donkeys", "horses", "pigs", "shulkers", "wolves"].forEach(setupStyleControls);
   }
 });
