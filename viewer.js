@@ -67,10 +67,10 @@ function drawGrid() {
   ctx.lineWidth = 1;
   ctx.font = "12px sans-serif";
   ctx.fillStyle = theme === "dark" ? "#888" : "#555";
-  ctx.textAlign = "left";
+  ctx.textAlign = "center";
   ctx.textBaseline = "top";
 
-  const MIN_LABEL_SPACING = 50;
+  const MIN_LABEL_SPACING = ctx.measureText("X: -30000000").width + 10;
   let lastLabelX = -Infinity;
 
   for (let x = startX; x <= endX; x += spacing) {
@@ -81,12 +81,13 @@ function drawGrid() {
       ctx.lineTo(sx, canvas.height);
       ctx.stroke();
       if (sx - lastLabelX >= MIN_LABEL_SPACING) {
-        ctx.fillText(`X: ${x}`, sx + 2, 2);
+        ctx.fillText(`X: ${x}`, sx, 2);
         lastLabelX = sx;
       }
     }
   }
 
+  ctx.textAlign = "left";
   for (let y = startY; y <= endY; y += spacing) {
     const sy = worldToScreen(0, y).y;
     if (sy >= 0 && sy <= canvas.height) {
