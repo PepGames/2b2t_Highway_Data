@@ -21,6 +21,7 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   draw();
+  drawMouseCoordinates();
 }
 
 function screenToWorld(x, y) {
@@ -165,7 +166,7 @@ canvas.addEventListener("wheel", (e) => {
   const worldBefore = screenToWorld(mouseX, mouseY);
   const oldZoom = zoom;
   zoom *= e.deltaY > 0 ? 0.9 : 1.1;
-  zoom = Math.max(0.1, Math.min(zoom, 100));
+  zoom = Math.max(0.000001, Math.min(zoom, 100));
 
   const worldAfter = screenToWorld(mouseX, mouseY);
   const dx = worldAfter.x - worldBefore.x;
