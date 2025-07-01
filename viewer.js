@@ -243,7 +243,7 @@ Papa.parse("map.csv", {
       Y: parseFloat(row.Y),
       Z: parseFloat(row.Z),
       Type: row.Type
-    })).filter(p => !isNaN(p.X) && !isNaN(p.Y) && !isNaN(p.Z));
+    })).filter(p => !isNaN(p.X) && !isNaN(p.Z));
     resizeCanvas();
     if (!hasInitialCentered) {
       centerView();
