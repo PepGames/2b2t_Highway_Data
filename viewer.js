@@ -35,14 +35,14 @@ function centerView() {
 function screenToWorld(x, y) {
   return {
     x: (x - canvas.width / 2 - offsetX) / zoom,
-    y: -(y - canvas.height / 2 - offsetY) / zoom  // Inverted Z
+    y: (y - canvas.height / 2 - offsetY) / zoom // Regular Z
   };
 }
 
 function worldToScreen(x, y) {
   return {
     x: x * zoom + canvas.width / 2 + offsetX,
-    y: -y * zoom + canvas.height / 2 + offsetY  // Inverted Z
+    y: y * zoom + canvas.height / 2 + offsetY // Regular Z
   };
 }
 
@@ -60,8 +60,8 @@ function drawGrid() {
 
   const startX = Math.max(Math.floor(topLeft.x / spacing) * spacing, -MAP_LIMIT);
   const endX = Math.min(Math.ceil(bottomRight.x / spacing) * spacing, MAP_LIMIT);
-  const startY = Math.max(Math.floor(bottomRight.y / spacing) * spacing, -MAP_LIMIT);
-  const endY = Math.min(Math.ceil(topLeft.y / spacing) * spacing, MAP_LIMIT);
+  const startY = Math.max(Math.floor(topLeft.y / spacing) * spacing, -MAP_LIMIT);
+  const endY = Math.min(Math.ceil(bottomRight.y / spacing) * spacing, MAP_LIMIT);
 
   ctx.strokeStyle = theme === "dark" ? "#444" : "#ccc";
   ctx.lineWidth = 1;
@@ -154,17 +154,17 @@ canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
   const mouseX = e.clientX;
   const mouseY = e.clientY;
-  const worldBefore = screenToWorld(mouseX, mouseY);
+
+  const worldX = (mouseX - canvas.width / 2 - offsetX) / zoom;
+  const worldY = (mouseY - canvas.height / 2 - offsetY) / zoom;
 
   const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
   const newZoom = zoom * zoomFactor;
   const maxZoomOut = canvas.height / (2 * MAP_LIMIT);
-  const clampedZoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
-  zoom = clampedZoom;
+  zoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
 
-  const worldAfter = screenToWorld(mouseX, mouseY);
-  offsetX += (worldBefore.x - worldAfter.x) * zoom;
-  offsetY += (worldBefore.y - worldAfter.y) * zoom;
+  offsetX = mouseX - canvas.width / 2 - worldX * zoom;
+  offsetY = mouseY - canvas.height / 2 - worldY * zoom;
 
   draw();
 });
