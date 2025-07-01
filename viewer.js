@@ -151,11 +151,23 @@ function checkHover(mouseX, mouseY) {
 }
 
 canvas.addEventListener("wheel", (e) => {
-  const worldBefore = screenToWorld(e.clientX, e.clientY);
+  e.preventDefault();
+
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
+
+  const worldBefore = screenToWorld(mouseX, mouseY);
+  const oldZoom = zoom;
   zoom *= e.deltaY > 0 ? 0.9 : 1.1;
-  const worldAfter = screenToWorld(e.clientX, e.clientY);
-  offsetX += (worldAfter.x - worldBefore.x) * zoom;
-  offsetY += (worldAfter.y - worldBefore.y) * zoom;
+  zoom = Math.max(0.1, Math.min(zoom, 100));
+
+  const worldAfter = screenToWorld(mouseX, mouseY);
+  const dx = worldAfter.x - worldBefore.x;
+  const dy = worldAfter.y - worldBefore.y;
+
+  offsetX += dx * zoom;
+  offsetY += dy * zoom;
+
   draw();
 });
 
