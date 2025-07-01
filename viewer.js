@@ -232,7 +232,7 @@ function drawMouseCoordinates() {
   if (coordBox) {
     coordBox.innerText = `X: ${world.x.toFixed(0)}  Z: ${world.y.toFixed(0)}`;
   }
-}  Z: ${world.y.toFixed(0)}`, canvas.width - 10, 20);
+
 }
 
 Papa.parse("map.csv", {
