@@ -69,6 +69,7 @@ body[data-theme="light"] #tooltip {
   z-index: 1000;
   pointer-events: none;
   font-family: sans-serif;
+  text-align: right;
 }
 
 body[data-theme="light"] #coord-box {
