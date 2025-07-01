@@ -57,6 +57,25 @@ body[data-theme="light"] #tooltip {
   color: var(--tooltip-text-light);
 }
 
+#coord-box {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  z-index: 1000;
+  pointer-events: none;
+  font-family: sans-serif;
+}
+
+body[data-theme="light"] #coord-box {
+  background: rgba(255, 255, 255, 0.8);
+  color: black;
+}
+
 button {
   padding: 6px 10px;
   font-size: 14px;
