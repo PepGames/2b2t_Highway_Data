@@ -35,14 +35,14 @@ function centerView() {
 function screenToWorld(x, y) {
   return {
     x: (x - canvas.width / 2 - offsetX) / zoom,
-    y: (y - canvas.height / 2 - offsetY) / zoom
+    y: -(y - canvas.height / 2 - offsetY) / zoom
   };
 }
 
 function worldToScreen(x, y) {
   return {
     x: x * zoom + canvas.width / 2 + offsetX,
-    y: y * zoom + canvas.height / 2 + offsetY
+    y: -y * zoom + canvas.height / 2 + offsetY
   };
 }
 
@@ -60,8 +60,8 @@ function drawGrid() {
 
   const startX = Math.max(Math.floor(topLeft.x / spacing) * spacing, -MAP_LIMIT);
   const endX = Math.min(Math.ceil(bottomRight.x / spacing) * spacing, MAP_LIMIT);
-  const startY = Math.max(Math.floor(topLeft.y / spacing) * spacing, -MAP_LIMIT);
-  const endY = Math.min(Math.ceil(bottomRight.y / spacing) * spacing, MAP_LIMIT);
+  const startY = Math.max(Math.floor(bottomRight.y / spacing) * spacing, -MAP_LIMIT);
+  const endY = Math.min(Math.ceil(topLeft.y / spacing) * spacing, MAP_LIMIT);
 
   ctx.strokeStyle = theme === "dark" ? "#444" : "#ccc";
   ctx.lineWidth = 1;
@@ -89,7 +89,7 @@ function drawGrid() {
     ctx.lineTo(canvas.width, sy);
     ctx.stroke();
     if (spacing * zoom >= labelThreshold) {
-      ctx.fillText(`Z: ${-y}`, 2, sy - 4);
+      ctx.fillText(`Z: ${y}`, 2, sy - 4);
     }
   }
 
@@ -131,7 +131,7 @@ function draw() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   if (showGrid) drawGrid();
   for (const point of dataPoints) {
-    const screen = worldToScreen(point.X, -point.Z);
+    const screen = worldToScreen(point.X, point.Z);
     ctx.beginPath();
     ctx.arc(screen.x, screen.y, 4, 0, Math.PI * 2);
     ctx.fillStyle = point.Type === "Chest" ? "#f00" : "#00f";
@@ -155,7 +155,7 @@ function checkHover(mouseX, mouseY) {
   const world = screenToWorld(mouseX, mouseY);
   for (const point of dataPoints) {
     const dx = world.x - point.X;
-    const dy = world.y + point.Z;
+    const dy = world.y - point.Z;
     if (dx * dx + dy * dy < (6 / zoom) ** 2) {
       showTooltip(mouseX, mouseY, `Type: ${point.Type}\nX: ${point.X}\nY: ${point.Y}`);
       return;
@@ -166,13 +166,14 @@ function checkHover(mouseX, mouseY) {
 
 canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
-  const oldZoom = zoom;
+  const worldBefore = screenToWorld(e.clientX, e.clientY);
   const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-  zoom *= zoomFactor;
+  const newZoom = zoom * zoomFactor;
   const maxZoomOut = Math.min(canvas.width / (2 * MAP_LIMIT), canvas.height / (2 * MAP_LIMIT));
-  zoom = Math.max(maxZoomOut, Math.min(zoom, 100));
-  offsetX += (e.clientX - canvas.width / 2) * (1 - zoom / oldZoom);
-  offsetY += (e.clientY - canvas.height / 2) * (1 - zoom / oldZoom);
+  zoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
+  const worldAfter = screenToWorld(e.clientX, e.clientY);
+  offsetX += (worldAfter.x - worldBefore.x) * zoom;
+  offsetY += (worldAfter.y - worldBefore.y) * zoom;
   draw();
 });
 
@@ -225,7 +226,7 @@ function drawMouseCoordinates() {
   const world = screenToWorld(mouseX, mouseY);
   const coordBox = document.getElementById("coord-box");
   if (coordBox) {
-    coordBox.innerText = `X: ${world.x.toFixed(0)}  Z: ${-world.y.toFixed(0)}`;
+    coordBox.innerText = `X: ${world.x.toFixed(0)}  Z: ${world.y.toFixed(0)}`;
   }
 }
 
