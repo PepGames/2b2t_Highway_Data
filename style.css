@@ -72,6 +72,11 @@ body[data-theme="light"] #tooltip {
   text-align: right;
 }
 
+body[data-theme="light"] #coord-box {
+  background: rgba(255, 255, 255, 0.8);
+  color: black;
+}
+
 #sidebar {
   position: fixed;
   top: 50%;
@@ -123,6 +128,12 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
   margin-bottom: 10px;
 }
 
+#sidebar details > summary {
+  font-weight: bold;
+  cursor: pointer;
+  margin: 6px 0;
+}
+
 #sidebar label {
   display: block;
   margin: 4px 0;
@@ -134,6 +145,16 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
 #sidebar select {
   float: right;
   margin-left: 10px;
+  width: 80px;
+  box-sizing: border-box;
+}
+
+#sidebar input[type="color"] {
+  width: 32px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: none;
 }
 
 #sidebar input[type="color"]:hover,
@@ -141,11 +162,6 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
 #sidebar select:hover {
   filter: brightness(1.2);
   cursor: pointer;
-}
-
-body[data-theme="light"] #coord-box {
-  background: rgba(255, 255, 255, 0.8);
-  color: black;
 }
 
 button {
@@ -165,4 +181,13 @@ button:hover {
 body[data-theme="light"] button {
   background: #ccc;
   color: #000;
+}
+
+@media (max-width: 600px) {
+  #sidebar {
+    width: 90vw;
+    right: auto;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }

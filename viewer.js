@@ -28,8 +28,25 @@ const TYPE_LABELS = {
   horses: "Horses",
   pigs: "Pigs",
   shulkers: "Shulkers",
-  wolves: "Wolves"
+  wolves: "Wolves",
+  unknown: "Unknown"
 };
+
+const NORMALIZED_TYPES = {
+  echest: "echests",
+  "standing_sign": "signs",
+  "wall_sign": "signs",
+  "minecraft:boat": "boats",
+  "minecraft:donkey": "donkeys",
+  "minecraft:horse": "horses",
+  "minecraft:pig": "pigs",
+  "shulker box": "shulkers",
+  "minecraft:wolf": "wolves"
+};
+
+function normalizeType(rawType) {
+  return NORMALIZED_TYPES[rawType.toLowerCase()] || "unknown";
+}
 
 function getDefaultStyle(type) {
   const defaults = {
@@ -41,11 +58,11 @@ function getDefaultStyle(type) {
     shulkers:{ color: "#8c564b", size: 4, shape: "square" },
     signs:   { color: "#e377c2", size: 4, shape: "circle" },
     wolves:  { color: "#7f7f7f", size: 4, shape: "triangle" },
+    unknown: { color: "#00f", size: 4, shape: "circle" }
   };
-  return defaults[type] || { color: "#00f", size: 4, shape: "circle" };
+  return defaults[type] || defaults.unknown;
 }
 
-// Initialize pointStyles with defaults
 Object.keys(TYPE_LABELS).forEach(type => {
   pointStyles[type] = getDefaultStyle(type);
 });
@@ -55,7 +72,6 @@ function getPointStyle(type) {
 }
 
 function setupStyleControls(key) {
-  const label = TYPE_LABELS[key];
   const colorInput = document.getElementById(`color-${key}`);
   const sizeInput = document.getElementById(`size-${key}`);
   const shapeSelect = document.getElementById(`shape-${key}`);
@@ -336,7 +352,7 @@ Papa.parse("map.csv", {
       X: parseFloat(row.X),
       Y: parseFloat(row.Y),
       Z: parseFloat(row.Z),
-      Type: row.Type.toLowerCase()
+      Type: normalizeType(row.Type)
     })).filter(p => !isNaN(p.X) && !isNaN(p.Z));
 
     Object.keys(TYPE_LABELS).forEach(setupStyleControls);
