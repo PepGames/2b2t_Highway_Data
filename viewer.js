@@ -296,16 +296,14 @@ function hideTooltip() {
 
 function checkHover(mouseX, mouseY) {
   const world = screenToWorld(mouseX, mouseY);
-  for (const point of dataPoints) {
-    const dx = world.x - point.X;
-    const dy = world.y - point.Z;
-    if (dx * dx + dy * dy < (6 / zoom) ** 2) {
-      const label = TYPE_LABELS[point.Type] || point.Type;
-      showTooltip(mouseX, mouseY, `Type: ${label}
-X: ${point.X}
-Y: ${point.Y}
-Z: ${point.Z}`);
-      return;
+  for (const type in drawnPointsCache) {
+    for (const point of drawnPointsCache[type]) {
+      const dx = world.x - point.X;
+      const dy = world.y - point.Z;
+      if (dx * dx + dy * dy < (6 / zoom) ** 2) {
+        showTooltip(mouseX, mouseY, `Type: ${point.OriginalType || point.Type}\nX: ${point.X}\nY: ${point.Y}\nZ: ${point.Z}`);
+        return;
+      }
     }
   }
   hideTooltip();
@@ -387,12 +385,17 @@ Papa.parse("map.csv", {
   download: true,
   header: true,
   complete: (results) => {
-    dataPoints = results.data.map((row) => ({
-      X: parseFloat(row.X),
-      Y: parseFloat(row.Y),
-      Z: parseFloat(row.Z),
-      Type: normalizeType(row.Type)
-    })).filter(p => !isNaN(p.X) && !isNaN(p.Z));
+    dataPoints = results.data.map((row) => {
+      const rawType = row.Type;
+      const normType = normalizeType(rawType);
+      return {
+        X: parseFloat(row.X),
+        Y: parseFloat(row.Y),
+        Z: parseFloat(row.Z),
+        Type: normType,
+        OriginalType: rawType
+      };
+    }).filter(p => !isNaN(p.X) && !isNaN(p.Z));
 
     Object.keys(TYPE_LABELS).forEach(setupStyleControls);
     resizeCanvas();
@@ -404,3 +407,4 @@ Papa.parse("map.csv", {
     }
   }
 });
+
