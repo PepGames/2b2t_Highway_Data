@@ -35,14 +35,14 @@ function centerView() {
 function screenToWorld(x, y) {
   return {
     x: (x - canvas.width / 2 - offsetX) / zoom,
-    y: (y - canvas.height / 2 - offsetY) / zoom
+    y: -(y - canvas.height / 2 - offsetY) / zoom
   };
 }
 
 function worldToScreen(x, y) {
   return {
     x: x * zoom + canvas.width / 2 + offsetX,
-    y: y * zoom + canvas.height / 2 + offsetY
+    y: -y * zoom + canvas.height / 2 + offsetY
   };
 }
 
@@ -60,8 +60,8 @@ function drawGrid() {
 
   const startX = Math.max(Math.floor(topLeft.x / spacing) * spacing, -MAP_LIMIT);
   const endX = Math.min(Math.ceil(bottomRight.x / spacing) * spacing, MAP_LIMIT);
-  const startY = Math.max(Math.floor(topLeft.y / spacing) * spacing, -MAP_LIMIT);
-  const endY = Math.min(Math.ceil(bottomRight.y / spacing) * spacing, MAP_LIMIT);
+  const startY = Math.max(Math.floor(bottomRight.y / spacing) * spacing, -MAP_LIMIT);
+  const endY = Math.min(Math.ceil(topLeft.y / spacing) * spacing, MAP_LIMIT);
 
   ctx.strokeStyle = theme === "dark" ? "#444" : "#ccc";
   ctx.lineWidth = 1;
@@ -89,7 +89,7 @@ function drawGrid() {
     ctx.lineTo(canvas.width, sy);
     ctx.stroke();
     if (spacing * zoom >= labelThreshold) {
-      ctx.fillText(`Z: ${y}`, 2, sy - 4);
+      ctx.fillText(`Z: ${-y}`, 2, sy - 4);
     }
   }
 
@@ -161,7 +161,7 @@ canvas.addEventListener("wheel", (e) => {
   zoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
   const worldAfter = screenToWorld(mouseX, mouseY);
   offsetX += (worldBefore.x - worldAfter.x) * zoom;
-  offsetY += (worldBefore.y - worldAfter.y) * zoom;
+  offsetY -= (worldBefore.y - worldAfter.y) * zoom;
   draw();
 });
 
@@ -214,7 +214,7 @@ function drawMouseCoordinates() {
   const world = screenToWorld(mouseX, mouseY);
   const coordBox = document.getElementById("coord-box");
   if (coordBox) {
-    coordBox.innerText = `X: ${world.x.toFixed(0)}  Z: ${world.y.toFixed(0)}`;
+    coordBox.innerText = `X: ${world.x.toFixed(0)}  Z: ${-world.y.toFixed(0)}`;
   }
 }
 
