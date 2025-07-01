@@ -1,0 +1,73 @@
+/* style.css */
+
+:root {
+  --bg-dark: #1e1e1e;
+  --bg-light: #f5f5f5;
+  --tooltip-dark: #333;
+  --tooltip-light: #fff;
+  --tooltip-text-dark: #fff;
+  --tooltip-text-light: #000;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+  background-color: var(--bg-dark);
+  color: #fff;
+}
+
+body[data-theme="light"] {
+  background-color: var(--bg-light);
+  color: #000;
+}
+
+#mapCanvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  cursor: grab;
+}
+
+#controls {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+#tooltip {
+  position: fixed;
+  background: var(--tooltip-dark);
+  color: var(--tooltip-text-dark);
+  padding: 5px 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: pre-line;
+  z-index: 100;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+body[data-theme="light"] #tooltip {
+  background: var(--tooltip-light);
+  color: var(--tooltip-text-light);
+}
+
+button {
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+}
+
+body[data-theme="light"] button {
+  background: #ccc;
+  color: #000;
+}
