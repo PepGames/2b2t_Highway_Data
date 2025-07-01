@@ -35,14 +35,14 @@ function centerView() {
 function screenToWorld(x, y) {
   return {
     x: (x - canvas.width / 2 - offsetX) / zoom,
-    y: (y - canvas.height / 2 - offsetY) / zoom // Regular Z
+    y: (y - canvas.height / 2 - offsetY) / zoom
   };
 }
 
 function worldToScreen(x, y) {
   return {
     x: x * zoom + canvas.width / 2 + offsetX,
-    y: y * zoom + canvas.height / 2 + offsetY // Regular Z
+    y: y * zoom + canvas.height / 2 + offsetY
   };
 }
 
@@ -69,17 +69,13 @@ function drawGrid() {
   ctx.fillStyle = theme === "dark" ? "#888" : "#555";
   ctx.textAlign = "left";
 
-  const labelThreshold = Math.min(canvas.width, canvas.height) / 40;
-
   for (let x = startX; x <= endX; x += spacing) {
     const sx = worldToScreen(x, 0).x;
     ctx.beginPath();
     ctx.moveTo(sx, 0);
     ctx.lineTo(sx, canvas.height);
     ctx.stroke();
-    if (spacing * zoom >= labelThreshold) {
-      ctx.fillText(`X: ${x}`, sx + 2, 12);
-    }
+    ctx.fillText(`X: ${x}`, sx + 2, 12);
   }
 
   for (let y = startY; y <= endY; y += spacing) {
@@ -88,9 +84,7 @@ function drawGrid() {
     ctx.moveTo(0, sy);
     ctx.lineTo(canvas.width, sy);
     ctx.stroke();
-    if (spacing * zoom >= labelThreshold) {
-      ctx.fillText(`Z: ${y}`, 2, sy - 4);
-    }
+    ctx.fillText(`Z: ${y}`, 2, sy - 4);
   }
 
   const bounds = [
