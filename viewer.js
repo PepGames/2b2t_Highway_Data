@@ -209,13 +209,36 @@ function drawGrid() {
   ctx.stroke();
 }
 
+let drawnPointsCache = {};
+let drawnPointsZoomLevel = null;
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   if (showGrid) drawGrid();
 
-  const drawnPoints = {}; // screen-space collision map per type
+  const zoomLevel = zoom.toFixed(5); // high precision for stability
+  if (drawnPointsZoomLevel !== zoomLevel) {
+    drawnPointsCache = {};
+    drawnPointsZoomLevel = zoomLevel;
+
+    for (const point of dataPoints) {
+      const screen = worldToScreen(point.X, point.Z);
+      const style = getPointStyle(point.Type);
+
+      // Skip if offscreen
+      if (
+        screen.x + style.size < 0 || screen.x - style.size > canvas.width ||
+        screen.y + style.size < 0 || screen.y - style.size > canvas.height
+      ) continue;
+
+      const key = `${Math.round(screen.x / (style.size * 1.5))},${Math.round(screen.y / (style.size * 1.5))}`;
+      if (!drawnPointsCache[point.Type]) drawnPointsCache[point.Type] = new Set();
+      if (drawnPointsCache[point.Type].has(key)) continue;
+      drawnPointsCache[point.Type].add(key);
+    }
+  }
 
   for (const point of dataPoints) {
     const screen = worldToScreen(point.X, point.Z);
@@ -227,11 +250,8 @@ function draw() {
       screen.y + style.size < 0 || screen.y - style.size > canvas.height
     ) continue;
 
-    // Collision key rounding to prevent overdraw at low zoom
     const key = `${Math.round(screen.x / (style.size * 1.5))},${Math.round(screen.y / (style.size * 1.5))}`;
-    if (!drawnPoints[point.Type]) drawnPoints[point.Type] = new Set();
-    if (drawnPoints[point.Type].has(key)) continue;
-    drawnPoints[point.Type].add(key);
+    if (!drawnPointsCache[point.Type] || !drawnPointsCache[point.Type].has(key)) continue;
 
     ctx.beginPath();
     switch (style.shape) {
@@ -260,6 +280,7 @@ function draw() {
 
   drawMouseCoordinates();
 }
+
 
 
 
