@@ -112,7 +112,15 @@ function drawGrid() {
   ctx.stroke();
 }
 
+function clampOffset() {
+  const maxOffsetX = MAP_LIMIT * zoom - canvas.width / 2;
+  const maxOffsetY = MAP_LIMIT * zoom - canvas.height / 2;
+  offsetX = Math.max(-maxOffsetX, Math.min(maxOffsetX, offsetX));
+  offsetY = Math.max(-maxOffsetY, Math.min(maxOffsetY, offsetY));
+}
+
 function draw() {
+  clampOffset();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
