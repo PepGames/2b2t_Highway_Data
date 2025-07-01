@@ -120,14 +120,8 @@ function clampOffset() {
   const maxOffsetY = MAP_LIMIT - halfViewHeight;
   const minOffsetY = -MAP_LIMIT + halfViewHeight;
 
-  const centerX = -offsetX / zoom;
-  const centerY = -offsetY / zoom;
-
-  const clampedX = Math.max(minOffsetX, Math.min(maxOffsetX, centerX));
-  const clampedY = Math.max(minOffsetY, Math.min(maxOffsetY, centerY));
-
-  offsetX = -clampedX * zoom;
-  offsetY = -clampedY * zoom;
+  offsetX = Math.max(-maxOffsetX * zoom, Math.min(-minOffsetX * zoom, offsetX));
+  offsetY = Math.max(-maxOffsetY * zoom, Math.min(-minOffsetY * zoom, offsetY));
 }
 
 function draw() {
