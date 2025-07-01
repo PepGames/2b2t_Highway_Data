@@ -73,11 +73,12 @@ body[data-theme="light"] #tooltip {
 }
 
 #sidebar {
-  position: absolute;
+  position: fixed;
+  top: 50%;
   right: 0;
-  top: 0;
+  transform: translateY(-50%);
   width: 240px;
-  max-height: 100vh;
+  max-height: 80vh;
   overflow-y: auto;
   background: rgba(30, 30, 30, 0.95);
   color: white;
@@ -85,6 +86,7 @@ body[data-theme="light"] #tooltip {
   font-family: sans-serif;
   z-index: 1000;
   border-left: 2px solid #555;
+  border-radius: 8px 0 0 8px;
 }
 
 #sidebar::-webkit-scrollbar {

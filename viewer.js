@@ -21,11 +21,17 @@ let zoom = 1;
 const pointStyles = {};
 
 function getDefaultStyle(type) {
-  return {
-    color: '#00f',
-    size: 4,
-    shape: 'circle'
+  const defaults = {
+    Boats:   { color: "#1f77b4", size: 4, shape: "circle" },
+    Donkeys: { color: "#ff7f0e", size: 4, shape: "square" },
+    "Ender Chests": { color: "#2ca02c", size: 4, shape: "triangle" },
+    Horses:  { color: "#d62728", size: 4, shape: "circle" },
+    Pigs:    { color: "#9467bd", size: 4, shape: "x" },
+    Shulkers:{ color: "#8c564b", size: 4, shape: "square" },
+    Signs:   { color: "#e377c2", size: 4, shape: "circle" },
+    Wolves:  { color: "#7f7f7f", size: 4, shape: "triangle" },
   };
+  return defaults[type] || { color: "#00f", size: 4, shape: "circle" };
 }
 
 function getPointStyle(type) {
@@ -36,6 +42,11 @@ function setupStyleControls(type) {
   const colorInput = document.getElementById(`color-${type}`);
   const sizeInput = document.getElementById(`size-${type}`);
   const shapeSelect = document.getElementById(`shape-${type}`);
+
+  const defaults = getPointStyle(type);
+  if (colorInput) colorInput.value = defaults.color;
+  if (sizeInput) sizeInput.value = defaults.size;
+  if (shapeSelect) shapeSelect.value = defaults.shape;
 
   if (colorInput) {
     colorInput.addEventListener("input", () => {
