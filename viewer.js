@@ -70,6 +70,9 @@ function drawGrid() {
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
 
+  const MIN_LABEL_SPACING = 50;
+  let lastLabelX = -Infinity;
+
   for (let x = startX; x <= endX; x += spacing) {
     const sx = worldToScreen(x, 0).x;
     if (sx >= 0 && sx <= canvas.width) {
@@ -77,7 +80,10 @@ function drawGrid() {
       ctx.moveTo(sx, 0);
       ctx.lineTo(sx, canvas.height);
       ctx.stroke();
-      ctx.fillText(`X: ${x}`, sx + 2, 2);
+      if (sx - lastLabelX >= MIN_LABEL_SPACING) {
+        ctx.fillText(`X: ${x}`, sx + 2, 2);
+        lastLabelX = sx;
+      }
     }
   }
 
