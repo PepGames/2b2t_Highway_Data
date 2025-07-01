@@ -215,6 +215,8 @@ function draw() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   if (showGrid) drawGrid();
 
+  const drawnPoints = {}; // screen-space collision map per type
+
   for (const point of dataPoints) {
     const screen = worldToScreen(point.X, point.Z);
     const style = getPointStyle(point.Type);
@@ -225,9 +227,11 @@ function draw() {
       screen.y + style.size < 0 || screen.y - style.size > canvas.height
     ) continue;
 
-    // Skip ultra-small points when zoomed way out
-    if (style.size * zoom < 0.1) continue;
-
+    // Collision key rounding to prevent overdraw at low zoom
+    const key = `${Math.round(screen.x / (style.size * 1.5))},${Math.round(screen.y / (style.size * 1.5))}`;
+    if (!drawnPoints[point.Type]) drawnPoints[point.Type] = new Set();
+    if (drawnPoints[point.Type].has(key)) continue;
+    drawnPoints[point.Type].add(key);
 
     ctx.beginPath();
     switch (style.shape) {
@@ -256,6 +260,7 @@ function draw() {
 
   drawMouseCoordinates();
 }
+
 
 
 function showTooltip(x, y, content) {
