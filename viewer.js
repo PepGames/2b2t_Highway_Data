@@ -45,6 +45,11 @@ function getDefaultStyle(type) {
   return defaults[type] || { color: "#00f", size: 4, shape: "circle" };
 }
 
+// Initialize pointStyles with defaults
+Object.keys(TYPE_LABELS).forEach(type => {
+  pointStyles[type] = getDefaultStyle(type);
+});
+
 function getPointStyle(type) {
   return pointStyles[type] || getDefaultStyle(type);
 }
@@ -62,7 +67,6 @@ function setupStyleControls(key) {
 
   if (colorInput) {
     colorInput.addEventListener("input", () => {
-      pointStyles[key] = pointStyles[key] || getDefaultStyle(key);
       pointStyles[key].color = colorInput.value;
       draw();
     });
@@ -70,7 +74,6 @@ function setupStyleControls(key) {
 
   if (sizeInput) {
     sizeInput.addEventListener("input", () => {
-      pointStyles[key] = pointStyles[key] || getDefaultStyle(key);
       pointStyles[key].size = parseInt(sizeInput.value, 10) || 4;
       draw();
     });
@@ -78,7 +81,6 @@ function setupStyleControls(key) {
 
   if (shapeSelect) {
     shapeSelect.addEventListener("change", () => {
-      pointStyles[key] = pointStyles[key] || getDefaultStyle(key);
       pointStyles[key].shape = shapeSelect.value;
       draw();
     });
