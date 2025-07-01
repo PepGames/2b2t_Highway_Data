@@ -112,23 +112,7 @@ function drawGrid() {
   ctx.stroke();
 }
 
-function clampOffset() {
-  const halfWidth = canvas.width / 2 / zoom;
-  const halfHeight = canvas.height / 2 / zoom;
-  const minX = -MAP_LIMIT + halfWidth;
-  const maxX = MAP_LIMIT - halfWidth;
-  const minY = -MAP_LIMIT + halfHeight;
-  const maxY = MAP_LIMIT - halfHeight;
-  const centerX = -offsetX / zoom;
-  const centerY = -offsetY / zoom;
-  const clampedX = Math.max(minX, Math.min(maxX, centerX));
-  const clampedY = Math.max(minY, Math.min(maxY, centerY));
-  offsetX = -clampedX * zoom;
-  offsetY = -clampedY * zoom;
-}
-
 function draw() {
-  clampOffset();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
