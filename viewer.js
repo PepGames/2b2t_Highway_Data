@@ -26,7 +26,7 @@ function resizeCanvas() {
 }
 
 function centerView() {
-  zoom = Math.min(canvas.width / (MAP_LIMIT * 2), canvas.height / (MAP_LIMIT * 2));
+  zoom = canvas.height / (MAP_LIMIT * 2);
   offsetX = 0;
   offsetY = 0;
   draw();
@@ -35,14 +35,14 @@ function centerView() {
 function screenToWorld(x, y) {
   return {
     x: (x - canvas.width / 2 - offsetX) / zoom,
-    y: -(y - canvas.height / 2 - offsetY) / zoom
+    y: (y - canvas.height / 2 - offsetY) / zoom
   };
 }
 
 function worldToScreen(x, y) {
   return {
     x: x * zoom + canvas.width / 2 + offsetX,
-    y: -y * zoom + canvas.height / 2 + offsetY
+    y: y * zoom + canvas.height / 2 + offsetY
   };
 }
 
@@ -60,8 +60,8 @@ function drawGrid() {
 
   const startX = Math.max(Math.floor(topLeft.x / spacing) * spacing, -MAP_LIMIT);
   const endX = Math.min(Math.ceil(bottomRight.x / spacing) * spacing, MAP_LIMIT);
-  const startY = Math.max(Math.floor(bottomRight.y / spacing) * spacing, -MAP_LIMIT);
-  const endY = Math.min(Math.ceil(topLeft.y / spacing) * spacing, MAP_LIMIT);
+  const startY = Math.max(Math.floor(topLeft.y / spacing) * spacing, -MAP_LIMIT);
+  const endY = Math.min(Math.ceil(bottomRight.y / spacing) * spacing, MAP_LIMIT);
 
   ctx.strokeStyle = theme === "dark" ? "#444" : "#ccc";
   ctx.lineWidth = 1;
@@ -111,21 +111,7 @@ function drawGrid() {
   ctx.stroke();
 }
 
-function clampOffset() {
-  const halfViewWidth = canvas.width / 2 / zoom;
-  const halfViewHeight = canvas.height / 2 / zoom;
-
-  const maxOffsetX = MAP_LIMIT - halfViewWidth;
-  const minOffsetX = -MAP_LIMIT + halfViewWidth;
-  const maxOffsetY = MAP_LIMIT - halfViewHeight;
-  const minOffsetY = -MAP_LIMIT + halfViewHeight;
-
-  offsetX = Math.max(-maxOffsetX * zoom, Math.min(-minOffsetX * zoom, offsetX));
-  offsetY = Math.max(-maxOffsetY * zoom, Math.min(-minOffsetY * zoom, offsetY));
-}
-
 function draw() {
-  clampOffset();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = theme === "dark" ? "#222" : "#fff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -166,14 +152,16 @@ function checkHover(mouseX, mouseY) {
 
 canvas.addEventListener("wheel", (e) => {
   e.preventDefault();
-  const worldBefore = screenToWorld(e.clientX, e.clientY);
+  const mouseX = e.clientX;
+  const mouseY = e.clientY;
+  const worldBefore = screenToWorld(mouseX, mouseY);
   const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
   const newZoom = zoom * zoomFactor;
-  const maxZoomOut = Math.min(canvas.width / (2 * MAP_LIMIT), canvas.height / (2 * MAP_LIMIT));
+  const maxZoomOut = canvas.height / (2 * MAP_LIMIT);
   zoom = Math.max(maxZoomOut, Math.min(newZoom, 100));
-  const worldAfter = screenToWorld(e.clientX, e.clientY);
-  offsetX += (worldAfter.x - worldBefore.x) * zoom;
-  offsetY += (worldAfter.y - worldBefore.y) * zoom;
+  const worldAfter = screenToWorld(mouseX, mouseY);
+  offsetX += (worldBefore.x - worldAfter.x) * zoom;
+  offsetY += (worldBefore.y - worldAfter.y) * zoom;
   draw();
 });
 
