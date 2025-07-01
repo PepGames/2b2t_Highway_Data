@@ -5,7 +5,7 @@ const ctx = canvas.getContext("2d");
 const tooltip = document.getElementById("tooltip");
 
 let dataPoints = [];
-let zoom = 1;
+let zoom = Math.min(canvas.width / (2 * MAP_LIMIT), canvas.height / (2 * MAP_LIMIT));
 let offsetX = 0;
 let offsetY = 0;
 let isDragging = false;
@@ -240,7 +240,7 @@ document.getElementById("toggle-grid").addEventListener("click", () => {
 document.getElementById("center-view").addEventListener("click", () => {
   offsetX = 0;
   offsetY = 0;
-  zoom = 1;
+  zoom = Math.min(canvas.width / (2 * MAP_LIMIT), canvas.height / (2 * MAP_LIMIT));
   draw();
 });
 
