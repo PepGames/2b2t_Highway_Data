@@ -13,6 +13,8 @@ let dragStart = { x: 0, y: 0 };
 let theme = "dark";
 let showGrid = false;
 
+const MAP_LIMIT = 30000000;
+
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -22,15 +24,25 @@ function resizeCanvas() {
 function screenToWorld(x, y) {
   return {
     x: (x - canvas.width / 2 - offsetX) / zoom,
-    y: -(y - canvas.height / 2 - offsetY) / zoom // invert Z
+    y: -(y - canvas.height / 2 - offsetY) / zoom
   };
 }
 
 function worldToScreen(x, y) {
   return {
     x: x * zoom + canvas.width / 2 + offsetX,
-    y: -y * zoom + canvas.height / 2 + offsetY // invert Z
+    y: -y * zoom + canvas.height / 2 + offsetY
   };
+}
+
+function getGridSpacing() {
+  const pxPerBlock = zoom;
+  if (pxPerBlock > 30) return 16;
+  if (pxPerBlock > 15) return 64;
+  if (pxPerBlock > 7) return 128;
+  if (pxPerBlock > 3) return 256;
+  if (pxPerBlock > 1.5) return 512;
+  return 1024;
 }
 
 function drawGrid() {
@@ -38,16 +50,21 @@ function drawGrid() {
   const topLeft = screenToWorld(0, 0);
   const bottomRight = screenToWorld(canvas.width, canvas.height);
 
-  const startX = Math.floor(topLeft.x / spacing) * spacing;
-  const endX = Math.ceil(bottomRight.x / spacing) * spacing;
-  const startY = Math.floor(bottomRight.y / spacing) * spacing;
-  const endY = Math.ceil(topLeft.y / spacing) * spacing;
+  const startX = Math.max(Math.floor(topLeft.x / spacing) * spacing, -MAP_LIMIT);
+  const endX = Math.min(Math.ceil(bottomRight.x / spacing) * spacing, MAP_LIMIT);
+  const startY = Math.max(Math.floor(bottomRight.y / spacing) * spacing, -MAP_LIMIT);
+  const endY = Math.min(Math.ceil(topLeft.y / spacing) * spacing, MAP_LIMIT);
+
+  const maxLines = 200;
+  if ((endX - startX) / spacing > maxLines || (endY - startY) / spacing > maxLines) return;
 
   ctx.strokeStyle = theme === "dark" ? "#444" : "#ccc";
   ctx.lineWidth = 1;
   ctx.font = "12px sans-serif";
   ctx.fillStyle = theme === "dark" ? "#888" : "#555";
   ctx.textAlign = "left";
+
+  const labelThreshold = 50; // px between labels
 
   // Vertical lines
   for (let x = startX; x <= endX; x += spacing) {
@@ -56,7 +73,9 @@ function drawGrid() {
     ctx.moveTo(sx, 0);
     ctx.lineTo(sx, canvas.height);
     ctx.stroke();
-    ctx.fillText(`X: ${x}`, sx + 2, 12);
+    if (spacing * zoom >= labelThreshold) {
+      ctx.fillText(`X: ${x}`, sx + 2, 12);
+    }
   }
 
   // Horizontal lines
@@ -66,15 +85,28 @@ function drawGrid() {
     ctx.moveTo(0, sy);
     ctx.lineTo(canvas.width, sy);
     ctx.stroke();
-    ctx.fillText(`Z: ${y}`, 2, sy - 4);
+    if (spacing * zoom >= labelThreshold) {
+      ctx.fillText(`Z: ${y}`, 2, sy - 4);
+    }
   }
-}
 
-function getGridSpacing() {
-  if (zoom > 4) return 16;
-  if (zoom > 2) return 64;
-  if (zoom > 1) return 128;
-  return 256;
+  // Draw map boundary box
+  const bounds = [
+    worldToScreen(-MAP_LIMIT, -MAP_LIMIT),
+    worldToScreen(MAP_LIMIT, -MAP_LIMIT),
+    worldToScreen(MAP_LIMIT, MAP_LIMIT),
+    worldToScreen(-MAP_LIMIT, MAP_LIMIT)
+  ];
+
+  ctx.strokeStyle = "#888";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(bounds[0].x, bounds[0].y);
+  for (let i = 1; i < bounds.length; i++) {
+    ctx.lineTo(bounds[i].x, bounds[i].y);
+  }
+  ctx.closePath();
+  ctx.stroke();
 }
 
 function draw() {
