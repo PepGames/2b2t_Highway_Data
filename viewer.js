@@ -191,11 +191,8 @@ canvas.addEventListener("wheel", (e) => {
   zoom = Math.max(maxZoomOut, Math.min(zoom, 100));
 
   const worldAfter = screenToWorld(mouseX, mouseY);
-  const dx = worldAfter.x - worldBefore.x;
-  const dy = worldAfter.y - worldBefore.y;
-
-  offsetX += dx * zoom;
-  offsetY += dy * zoom;
+  offsetX += (worldBefore.x - worldAfter.x) * zoom;
+  offsetY += (worldBefore.y - worldAfter.y) * zoom;
 
   draw();
 });
@@ -224,7 +221,7 @@ canvas.addEventListener("mousemove", (e) => {
   }
 
   draw();
-  }
+  drawMouseCoordinates();
 });
 
 canvas.addEventListener("contextmenu", (e) => e.preventDefault());
