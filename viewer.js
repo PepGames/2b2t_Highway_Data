@@ -19,8 +19,14 @@ const MAP_LIMIT = 30000000;
 let zoom = 1;
 
 const STYLE_STORAGE_KEY = "pointStyleSettings";
+const UI_STORAGE_KEY = "uiPrefs";
 const pointStyles = {};
 const showDataFlags = {};
+
+const loadedUIPrefs = JSON.parse(localStorage.getItem(UI_STORAGE_KEY) || '{}');
+if (loadedUIPrefs.theme) theme = loadedUIPrefs.theme;
+if (typeof loadedUIPrefs.showGrid === 'boolean') showGrid = loadedUIPrefs.showGrid;
+document.body.setAttribute("data-theme", theme);
 
 const TYPE_LABELS = {
   signs: "Signs",
@@ -106,6 +112,7 @@ function saveStylesToLocalStorage() {
     };
   }
   localStorage.setItem(STYLE_STORAGE_KEY, JSON.stringify(toSave));
+  localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({ theme, showGrid }));
   showSavePopup();
 }
 
@@ -113,6 +120,7 @@ function loadStylesFromLocalStorage() {/* no-op, already handled above */}
 
 function resetStyles() {
   localStorage.removeItem(STYLE_STORAGE_KEY);
+  localStorage.removeItem(UI_STORAGE_KEY);
   location.reload();
 }
 
@@ -427,10 +435,12 @@ function checkHover(mouseX, mouseY) {
   const world = screenToWorld(mouseX, mouseY);
   for (const type in drawnPointsCache) {
     if (!showDataFlags[type]) continue;
+    const style = getPointStyle(type);
+    const hitRadius = (style.size * 1.25) / zoom;
     for (const point of drawnPointsCache[type]) {
       const dx = world.x - point.X;
       const dy = world.y - point.Z;
-      if (dx * dx + dy * dy < (6 / zoom) ** 2) {
+      if (dx * dx + dy * dy < hitRadius * hitRadius) {
         showTooltip(mouseX, mouseY, `Type: ${point.OriginalType || point.Type}\nX: ${point.X}\nY: ${point.Y}\nZ: ${point.Z}`);
         return;
       }
@@ -507,6 +517,7 @@ document.getElementById("toggle-grid").addEventListener("click", () => {
   showGrid = !showGrid;
   draw();
 });
+
 
 document.getElementById("center-view").addEventListener("click", () => {
   centerView();
