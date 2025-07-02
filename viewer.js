@@ -45,6 +45,20 @@ const NORMALIZED_TYPES = {
   "minecraft:wolf": "wolves"
 };
 
+function refreshDataForType(type) {
+  const style = getPointStyle(type);
+  const radiusInWorld = style.size / zoom;
+  const tempSet = new Set();
+  drawnPointsCache[type] = [];
+  for (const point of dataPoints) {
+    if (point.Type !== type) continue;
+    const cacheKey = `${Math.round(point.X / radiusInWorld)},${Math.round(point.Z / radiusInWorld)}`;
+    if (tempSet.has(cacheKey)) continue;
+    tempSet.add(cacheKey);
+    drawnPointsCache[type].push(point);
+  }
+}
+
 function normalizeType(rawType) {
   return NORMALIZED_TYPES[rawType.toLowerCase()] || "unknown";
 }
@@ -110,37 +124,21 @@ function setupStyleControls(key) {
   }
 
   if (showCheckbox) {
-    showCheckbox.addEventListener("change", () => {
-      showDataFlags[key] = showCheckbox.checked;
-      invalidateDrawCache();
-      draw();
-    });
-  }
+  showCheckbox.addEventListener("change", () => {
+    showDataFlags[key] = showCheckbox.checked;
+    if (showCheckbox.checked) {
+      refreshDataForType(key);
+    } else {
+      drawnPointsCache[key] = [];
+    }
+    draw();
+  });
+}
 }
 
 function invalidateDrawCache() {
   drawnPointsZoomLevel = null;
 }
-
-    // Force update of drawnPointsCache for this type
-    const style = getPointStyle(key);
-    const radiusInWorld = style.size / zoom;
-    const tempSet = new Set();
-
-    drawnPointsCache[key] = []; // Clear current points of this type
-
-    for (const point of dataPoints) {
-      if (point.Type !== key) continue;
-      const cacheKey = `${Math.round(point.X / radiusInWorld)},${Math.round(point.Z / radiusInWorld)}`;
-      if (tempSet.has(cacheKey)) continue;
-      tempSet.add(cacheKey);
-      drawnPointsCache[key].push(point);
-    }
-
-    draw();
-  });
-}
-
 
 
 function resizeCanvas() {
