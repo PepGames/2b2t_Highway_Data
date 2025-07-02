@@ -237,6 +237,8 @@ function draw() {
     const tempCache = {};
 
     for (const point of dataPoints) {
+      if (!showDataFlags[point.Type]) continue; // <-- add this line to respect Show Data checkbox
+
       const style = getPointStyle(point.Type);
       const radiusInWorld = style.size / zoom;
       const key = `${Math.round(point.X / radiusInWorld)},${Math.round(point.Z / radiusInWorld)}`;
@@ -255,7 +257,6 @@ function draw() {
       const screen = worldToScreen(point.X, point.Z);
       const style = getPointStyle(point.Type);
 
-      // Skip if offscreen
       if (
         screen.x + style.size < 0 || screen.x - style.size > canvas.width ||
         screen.y + style.size < 0 || screen.y - style.size > canvas.height
