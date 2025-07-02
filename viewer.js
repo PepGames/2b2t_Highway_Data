@@ -88,6 +88,7 @@ function setupStyleControls(key) {
   if (colorInput) {
     colorInput.addEventListener("input", () => {
       pointStyles[key].color = colorInput.value;
+      invalidateDrawCache();
       draw();
     });
   }
@@ -95,6 +96,7 @@ function setupStyleControls(key) {
   if (sizeInput) {
     sizeInput.addEventListener("input", () => {
       pointStyles[key].size = parseInt(sizeInput.value, 10) || 4;
+      invalidateDrawCache();
       draw();
     });
   }
@@ -102,13 +104,23 @@ function setupStyleControls(key) {
   if (shapeSelect) {
     shapeSelect.addEventListener("change", () => {
       pointStyles[key].shape = shapeSelect.value;
+      invalidateDrawCache();
       draw();
     });
   }
 
   if (showCheckbox) {
-  showCheckbox.addEventListener("change", () => {
-    showDataFlags[key] = showCheckbox.checked;
+    showCheckbox.addEventListener("change", () => {
+      showDataFlags[key] = showCheckbox.checked;
+      invalidateDrawCache();
+      draw();
+    });
+  }
+}
+
+function invalidateDrawCache() {
+  drawnPointsZoomLevel = null;
+}
 
     // Force update of drawnPointsCache for this type
     const style = getPointStyle(key);
