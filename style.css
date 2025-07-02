@@ -149,24 +149,27 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
-  flex-wrap: nowrap;
-  justify-content: space-between;
+  flex-wrap: nowrap; /* prevent wrapping that causes overflow */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .control-group label {
   font-size: 13px;
-  flex: 0 0 100%;
   margin: 0;
-  padding-left: 18px; /* Adjusted from 0 to 18px for visual alignment */
+  padding-left: 18px;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .control-group input[type="color"],
 .control-group input[type="number"],
-.control-group input[type="text"],
+.control-group select,
 .control-group input[type="checkbox"] {
-  flex: 0 0 auto;
-  margin-left: auto; /* pushes the checkbox to the right */
-  margin-right: 2px; /* fine-tune spacing for alignment with color picker */
+  flex: 1;
+  min-width: 0; /* allow shrinking inside flex container */
+  padding: 2px;
+  box-sizing: border-box;
 },
 .control-group select {
   flex: 1 1 auto;
