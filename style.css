@@ -143,61 +143,54 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
   flex-wrap: wrap;
 }
 
+.control-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
 .control-group label {
   font-size: 13px;
-  flex: 0 0 100%;
   margin: 0;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .control-group input[type="color"],
 .control-group input[type="number"],
-.control-group select,
-.control-group input[type="checkbox"] {
-  flex: 1;
+.control-group input[type="text"],
+.control-group input[type="checkbox"],
+.control-group select {
+  flex: 1 1 auto;
   padding: 2px;
   box-sizing: border-box;
+  max-width: 120px;
 }
 
+/* Ensure color inputs remain small */
 #sidebar input[type="color"] {
   width: 32px;
   height: 24px;
   padding: 0;
   border: none;
   background: none;
+  flex: 0 0 auto;
 }
 
-#sidebar input[type="color"]:hover,
-#sidebar input[type="number"]:hover,
-#sidebar select:hover,
-#sidebar input[type="checkbox"]:hover {
-  filter: brightness(1.2);
-  cursor: pointer;
-}
-
-button {
-  padding: 6px 10px;
-  font-size: 14px;
-  cursor: pointer;
-  background: #444;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-}
-
-button:hover {
-  background: #666;
-}
-
-body[data-theme="light"] button {
-  background: #ccc;
-  color: #000;
-}
-
+/* Allow wrapping on really small screens */
 @media (max-width: 600px) {
-  #sidebar {
-    width: 90vw;
-    right: auto;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  .control-group {
+    flex-wrap: wrap;
+  }
+
+  .control-group label,
+  .control-group input,
+  .control-group select {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 }
