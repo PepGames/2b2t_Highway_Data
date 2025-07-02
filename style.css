@@ -136,22 +136,24 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
 
 .control-group {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .control-group label {
-  font-size: 12px;
-  margin-bottom: 2px;
+  font-size: 13px;
+  flex: 0 0 80px;
+  margin: 0;
 }
 
 .control-group input[type="color"],
 .control-group input[type="number"],
 .control-group select {
-  width: 100%;
-  box-sizing: border-box;
+  flex: 1;
   padding: 2px;
+  box-sizing: border-box;
 }
 
 #sidebar input[type="color"] {
