@@ -107,12 +107,28 @@ function setupStyleControls(key) {
   }
 
   if (showCheckbox) {
-    showCheckbox.addEventListener("change", () => {
-      showDataFlags[key] = showCheckbox.checked;
-      draw();
-    });
-  }
+  showCheckbox.addEventListener("change", () => {
+    showDataFlags[key] = showCheckbox.checked;
+
+    // Force update of drawnPointsCache for this type
+    const style = getPointStyle(key);
+    const radiusInWorld = style.size / zoom;
+    const tempSet = new Set();
+
+    drawnPointsCache[key] = []; // Clear current points of this type
+
+    for (const point of dataPoints) {
+      if (point.Type !== key) continue;
+      const cacheKey = `${Math.round(point.X / radiusInWorld)},${Math.round(point.Z / radiusInWorld)}`;
+      if (tempSet.has(cacheKey)) continue;
+      tempSet.add(cacheKey);
+      drawnPointsCache[key].push(point);
+    }
+
+    draw();
+  });
 }
+
 
 
 function resizeCanvas() {
