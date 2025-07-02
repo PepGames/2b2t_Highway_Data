@@ -47,6 +47,32 @@ const NORMALIZED_TYPES = {
 
 const STYLE_STORAGE_KEY = "pointStyleSettings";
 
+// 1. Add a floating popup element to the DOM
+const savePopup = document.createElement("div");
+savePopup.id = "save-popup";
+savePopup.textContent = "Data Settings Saved";
+savePopup.style.position = "fixed";
+savePopup.style.top = "50%";
+savePopup.style.left = "50%";
+savePopup.style.transform = "translate(-50%, -50%)";
+savePopup.style.backgroundColor = "#333";
+savePopup.style.color = "white";
+savePopup.style.padding = "10px 20px";
+savePopup.style.borderRadius = "6px";
+savePopup.style.fontSize = "18px";
+savePopup.style.zIndex = "9999";
+savePopup.style.opacity = "0";
+savePopup.style.transition = "opacity 0.5s ease-in-out";
+document.body.appendChild(savePopup);
+
+function showSavePopup() {
+  savePopup.style.opacity = "1";
+  setTimeout(() => {
+    savePopup.style.opacity = "0";
+  }, 1500);
+}
+
+// 2. Update `saveStylesToLocalStorage` to also show the popup
 function saveStylesToLocalStorage() {
   const toSave = {};
   for (const type in pointStyles) {
@@ -56,6 +82,7 @@ function saveStylesToLocalStorage() {
     };
   }
   localStorage.setItem(STYLE_STORAGE_KEY, JSON.stringify(toSave));
+  showSavePopup();
 }
 
 function loadStylesFromLocalStorage() {
