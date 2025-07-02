@@ -80,7 +80,7 @@ Object.keys(TYPE_LABELS).forEach(type => {
 // 1. Add a floating popup element to the DOM
 const savePopup = document.createElement("div");
 savePopup.id = "save-popup";
-savePopup.textContent = "Data Settings Saved";
+savePopup.textContent = "User Settings Saved";
 savePopup.style.position = "fixed";
 savePopup.style.top = "50%";
 savePopup.style.left = "50%";
