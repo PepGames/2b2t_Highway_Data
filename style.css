@@ -155,9 +155,9 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
 
 .control-group label {
   font-size: 13px;
+  flex: 0 0 100%;
   margin: 0;
-  flex: 0 0 auto;
-  white-space: nowrap;
+  padding-left: 18px; /* Adjusted from 0 to 18px for visual alignment */
 }
 
 .control-group input[type="color"],
