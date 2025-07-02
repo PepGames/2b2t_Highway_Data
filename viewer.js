@@ -20,6 +20,14 @@ let zoom = 1;
 
 const pointStyles = {};
 const showDataFlags = {};
+const loadedStyles = localStorage.getItem(STYLE_STORAGE_KEY);
+const parsedStyles = loadedStyles ? JSON.parse(loadedStyles) : {};
+
+Object.keys(TYPE_LABELS).forEach(type => {
+  const defaults = getDefaultStyle(type);
+  pointStyles[type] = { ...defaults, ...(parsedStyles[type] || {}) };
+  showDataFlags[type] = parsedStyles[type]?.show ?? true;
+});
 
 const TYPE_LABELS = {
   signs: "Signs",
@@ -85,22 +93,7 @@ function saveStylesToLocalStorage() {
   showSavePopup();
 }
 
-function loadStylesFromLocalStorage() {
-  const saved = localStorage.getItem(STYLE_STORAGE_KEY);
-  if (!saved) return;
-  try {
-    const parsed = JSON.parse(saved);
-    for (const type in parsed) {
-      if (pointStyles[type]) {
-        pointStyles[type] = {
-          ...pointStyles[type],
-          ...parsed[type]
-        };
-        showDataFlags[type] = parsed[type].show ?? true;
-      }
-    }
-  } catch {}
-}
+function loadStylesFromLocalStorage() {/* no-op, already handled above */}
 
 function resetStyles() {
   localStorage.removeItem(STYLE_STORAGE_KEY);
@@ -436,6 +429,9 @@ function checkHover(mouseX, mouseY) {
 }
 
 canvas.addEventListener("wheel", (e) => {
+  const active = document.activeElement;
+  if (active && (active.tagName === "INPUT" || active.tagName === "SELECT")) return;
+
   e.preventDefault();
   const mouseX = e.clientX;
   const mouseY = e.clientY;
