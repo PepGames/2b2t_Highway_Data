@@ -134,19 +134,24 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
   margin: 6px 0;
 }
 
-#sidebar label {
-  display: block;
-  margin: 4px 0;
-  font-size: 14px;
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
 }
 
-#sidebar input[type="color"],
-#sidebar input[type="number"],
-#sidebar select {
-  float: right;
-  margin-left: 10px;
-  width: 80px;
+.control-group label {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.control-group input[type="color"],
+.control-group input[type="number"],
+.control-group select {
+  width: 100%;
   box-sizing: border-box;
+  padding: 2px;
 }
 
 #sidebar input[type="color"] {
