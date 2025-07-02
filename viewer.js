@@ -45,6 +45,66 @@ const NORMALIZED_TYPES = {
   "minecraft:wolf": "wolves"
 };
 
+const STYLE_STORAGE_KEY = "pointStyleSettings";
+
+function saveStylesToLocalStorage() {
+  const toSave = {};
+  for (const type in pointStyles) {
+    toSave[type] = {
+      ...pointStyles[type],
+      show: showDataFlags[type] || false
+    };
+  }
+  localStorage.setItem(STYLE_STORAGE_KEY, JSON.stringify(toSave));
+}
+
+function loadStylesFromLocalStorage() {
+  const saved = localStorage.getItem(STYLE_STORAGE_KEY);
+  if (!saved) return;
+  try {
+    const parsed = JSON.parse(saved);
+    for (const type in parsed) {
+      if (pointStyles[type]) {
+        pointStyles[type] = {
+          ...pointStyles[type],
+          ...parsed[type]
+        };
+        showDataFlags[type] = parsed[type].show ?? true;
+      }
+    }
+  } catch {}
+}
+
+function resetStyles() {
+  localStorage.removeItem(STYLE_STORAGE_KEY);
+  location.reload();
+}
+
+// Add save/reset buttons under sidebar control
+function addSaveResetButtons() {
+  const sidebar = document.getElementById("sidebar");
+  const btnGroup = document.createElement("div");
+  btnGroup.style.marginTop = "10px";
+  btnGroup.style.display = "flex";
+  btnGroup.style.gap = "8px";
+
+  const saveBtn = document.createElement("button");
+  saveBtn.textContent = "Save";
+  saveBtn.onclick = saveStylesToLocalStorage;
+
+  const resetBtn = document.createElement("button");
+  resetBtn.textContent = "Reset";
+  resetBtn.onclick = resetStyles;
+
+  btnGroup.appendChild(saveBtn);
+  btnGroup.appendChild(resetBtn);
+  sidebar.appendChild(btnGroup);
+}
+
+// Call these at init
+loadStylesFromLocalStorage();
+addSaveResetButtons();
+
 function refreshDataForType(type) {
   const style = getPointStyle(type);
   const radiusInWorld = style.size / zoom;
