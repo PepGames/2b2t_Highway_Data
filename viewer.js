@@ -174,11 +174,6 @@ function getDefaultStyle(type) {
   return defaults[type] || defaults.unknown;
 }
 
-Object.keys(TYPE_LABELS).forEach(type => {
-  pointStyles[type] = getDefaultStyle(type);
-  showDataFlags[type] = true;
-});
-
 function getPointStyle(type) {
   return pointStyles[type] || getDefaultStyle(type);
 }
