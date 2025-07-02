@@ -18,16 +18,9 @@ let hasInitialCentered = false;
 const MAP_LIMIT = 30000000;
 let zoom = 1;
 
+const STYLE_STORAGE_KEY = "pointStyleSettings";
 const pointStyles = {};
 const showDataFlags = {};
-const loadedStyles = localStorage.getItem(STYLE_STORAGE_KEY);
-const parsedStyles = loadedStyles ? JSON.parse(loadedStyles) : {};
-
-Object.keys(TYPE_LABELS).forEach(type => {
-  const defaults = getDefaultStyle(type);
-  pointStyles[type] = { ...defaults, ...(parsedStyles[type] || {}) };
-  showDataFlags[type] = parsedStyles[type]?.show ?? true;
-});
 
 const TYPE_LABELS = {
   signs: "Signs",
@@ -53,7 +46,30 @@ const NORMALIZED_TYPES = {
   "minecraft:wolf": "wolves"
 };
 
-const STYLE_STORAGE_KEY = "pointStyleSettings";
+const loadedStyles = localStorage.getItem(STYLE_STORAGE_KEY);
+const parsedStyles = loadedStyles ? JSON.parse(loadedStyles) : {};
+
+function getDefaultStyle(type) {
+  const defaults = {
+    boats:   { color: "#1f77b4", size: 4, shape: "circle" },
+    donkeys: { color: "#ff7f0e", size: 4, shape: "square" },
+    echests: { color: "#2ca02c", size: 4, shape: "triangle" },
+    horses:  { color: "#d62728", size: 4, shape: "circle" },
+    pigs:    { color: "#9467bd", size: 4, shape: "x" },
+    shulkers:{ color: "#8c564b", size: 4, shape: "square" },
+    signs:   { color: "#e377c2", size: 4, shape: "circle" },
+    wolves:  { color: "#7f7f7f", size: 4, shape: "triangle" },
+    unknown: { color: "#00f", size: 4, shape: "circle" }
+  };
+  return defaults[type] || defaults.unknown;
+}
+
+Object.keys(TYPE_LABELS).forEach(type => {
+  const defaults = getDefaultStyle(type);
+  pointStyles[type] = { ...defaults, ...(parsedStyles[type] || {}) };
+  showDataFlags[type] = parsedStyles[type]?.show ?? true;
+});
+
 
 // 1. Add a floating popup element to the DOM
 const savePopup = document.createElement("div");
