@@ -188,7 +188,7 @@ function setupStyleControls(key) {
   if (colorInput) colorInput.value = defaults.color;
   if (sizeInput) sizeInput.value = defaults.size;
   if (shapeSelect) shapeSelect.value = defaults.shape;
-  if (showCheckbox) showCheckbox.checked = true;
+  if (showCheckbox) showCheckbox.checked = !!showDataFlags[key];
 
   if (colorInput) {
     colorInput.addEventListener("input", () => {
