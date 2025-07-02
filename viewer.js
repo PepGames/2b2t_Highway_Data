@@ -19,6 +19,7 @@ const MAP_LIMIT = 30000000;
 let zoom = 1;
 
 const pointStyles = {};
+const showDataFlags = {};
 
 const TYPE_LABELS = {
   signs: "Signs",
@@ -65,6 +66,7 @@ function getDefaultStyle(type) {
 
 Object.keys(TYPE_LABELS).forEach(type => {
   pointStyles[type] = getDefaultStyle(type);
+  showDataFlags[type] = true;
 });
 
 function getPointStyle(type) {
@@ -75,11 +77,13 @@ function setupStyleControls(key) {
   const colorInput = document.getElementById(`color-${key}`);
   const sizeInput = document.getElementById(`size-${key}`);
   const shapeSelect = document.getElementById(`shape-${key}`);
+  const showCheckbox = document.getElementById(`show-${key}`);
 
   const defaults = getPointStyle(key);
   if (colorInput) colorInput.value = defaults.color;
   if (sizeInput) sizeInput.value = defaults.size;
   if (shapeSelect) shapeSelect.value = defaults.shape;
+  if (showCheckbox) showCheckbox.checked = true;
 
   if (colorInput) {
     colorInput.addEventListener("input", () => {
@@ -98,6 +102,13 @@ function setupStyleControls(key) {
   if (shapeSelect) {
     shapeSelect.addEventListener("change", () => {
       pointStyles[key].shape = shapeSelect.value;
+      draw();
+    });
+  }
+
+  if (showCheckbox) {
+    showCheckbox.addEventListener("change", () => {
+      showDataFlags[key] = showCheckbox.checked;
       draw();
     });
   }
@@ -297,6 +308,7 @@ function hideTooltip() {
 function checkHover(mouseX, mouseY) {
   const world = screenToWorld(mouseX, mouseY);
   for (const type in drawnPointsCache) {
+    if (!showDataFlags[type]) continue;
     for (const point of drawnPointsCache[type]) {
       const dx = world.x - point.X;
       const dy = world.y - point.Z;

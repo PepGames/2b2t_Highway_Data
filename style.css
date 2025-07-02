@@ -140,17 +140,19 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .control-group label {
   font-size: 13px;
-  flex: 0 0 80px;
+  flex: 0 0 100%;
   margin: 0;
 }
 
 .control-group input[type="color"],
 .control-group input[type="number"],
-.control-group select {
+.control-group select,
+.control-group input[type="checkbox"] {
   flex: 1;
   padding: 2px;
   box-sizing: border-box;
@@ -166,7 +168,8 @@ body[data-theme="light"] #sidebar::-webkit-scrollbar-thumb:hover {
 
 #sidebar input[type="color"]:hover,
 #sidebar input[type="number"]:hover,
-#sidebar select:hover {
+#sidebar select:hover,
+#sidebar input[type="checkbox"]:hover {
   filter: brightness(1.2);
   cursor: pointer;
 }
