@@ -439,11 +439,15 @@ function checkHover(mouseX, mouseY) {
   hideTooltip();
 }
 
-canvas.addEventListener("wheel", (e) => {
-  const active = document.activeElement;
-  if (active && (active.tagName === "INPUT" || active.tagName === "SELECT")) return;
+window.addEventListener("wheel", (e) => {
+  // Block zoom if hovering over sidebar or any top UI
+  const hoveredEl = document.elementFromPoint(e.clientX, e.clientY);
+  if (hoveredEl && hoveredEl.closest("#sidebar, #toggle-theme, #toggle-grid, #center-view")) {
+    return;
+  }
 
   e.preventDefault();
+
   const mouseX = e.clientX;
   const mouseY = e.clientY;
 
@@ -459,7 +463,9 @@ canvas.addEventListener("wheel", (e) => {
   offsetY = mouseY - canvas.height / 2 - worldY * zoom;
 
   draw();
-});
+}, { passive: false });
+
+
 
 canvas.addEventListener("mousedown", (e) => {
   if (e.button === 2 || e.button === 1) {
