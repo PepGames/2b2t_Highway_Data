@@ -167,20 +167,6 @@ function normalizeType(rawType) {
   return NORMALIZED_TYPES[rawType.toLowerCase()] || "unknown";
 }
 
-function getDefaultStyle(type) {
-  const defaults = {
-    boats:   { color: "#1f77b4", size: 4, shape: "circle" },
-    donkeys: { color: "#ff7f0e", size: 4, shape: "square" },
-    echests: { color: "#2ca02c", size: 4, shape: "triangle" },
-    horses:  { color: "#d62728", size: 4, shape: "circle" },
-    pigs:    { color: "#9467bd", size: 4, shape: "x" },
-    shulkers:{ color: "#8c564b", size: 4, shape: "square" },
-    signs:   { color: "#e377c2", size: 4, shape: "circle" },
-    wolves:  { color: "#7f7f7f", size: 4, shape: "triangle" },
-    unknown: { color: "#00f", size: 4, shape: "circle" }
-  };
-  return defaults[type] || defaults.unknown;
-}
 
 function getPointStyle(type) {
   return pointStyles[type] || getDefaultStyle(type);
