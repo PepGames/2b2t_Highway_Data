@@ -57,14 +57,14 @@ const parsedStyles = loadedStyles ? JSON.parse(loadedStyles) : {};
 
 function getDefaultStyle(type) {
   const defaults = {
-    boats:   { color: "#1f77b4", size: 4, shape: "circle" },
-    donkeys: { color: "#ff7f0e", size: 4, shape: "square" },
-    echests: { color: "#2ca02c", size: 4, shape: "triangle" },
-    horses:  { color: "#d62728", size: 4, shape: "circle" },
-    pigs:    { color: "#9467bd", size: 4, shape: "x" },
-    shulkers:{ color: "#8c564b", size: 4, shape: "square" },
-    signs:   { color: "#e377c2", size: 4, shape: "circle" },
-    wolves:  { color: "#7f7f7f", size: 4, shape: "triangle" },
+    boats:   { color: "#3daeff", size: 4, shape: "circle" },
+    donkeys: { color: "#ff7f0e", size: 5, shape: "triangle" },
+    echests: { color: "#472ead", size: 8, shape: "square" },
+    horses:  { color: "#683e22", size: 5, shape: "triangle" },
+    pigs:    { color: "#ff8af5", size: 5, shape: "triangle" },
+    shulkers:{ color: "#990036", size: 8, shape: "square" },
+    signs:   { color: "#c7b766", size: 4, shape: "circle" },
+    wolves:  { color: "#a7afbe", size: 5, shape: "triangle" },
     unknown: { color: "#00f", size: 4, shape: "circle" }
   };
   return defaults[type] || defaults.unknown;
